@@ -66,7 +66,7 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const allowedIps = ['177.39.236.1'] as any
   const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
-  if (allowedIps.includes(ip)) {
+  if (!allowedIps.includes(ip)) {
     return {
       redirect: {
         destination: '/404',
