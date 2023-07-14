@@ -6,7 +6,7 @@ import { Modal } from '../../components/CreateModal'
 import { Table } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link';
-import { GetServerSideProps } from 'next';
+// import { GetServerSideProps } from 'next';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useSelector, useDispatch } from 'react-redux';
 import { resetOperationsWindow, updateOperationsWindowValue } from '../GlobalRedux/Features/operation/operationSlice';
@@ -273,18 +273,18 @@ function TableScreen() {
 
 export default TableScreen;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const allowedIps = ['177.39.236.1'] as any
-  const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
-  if (!allowedIps.includes(ip)) {
-    return {
-      redirect: {
-        destination: '/404',
-        permanent: false,
-      },
-    }
-  }
-  return {
-    props: {},
-  }
-}
+// export const getServerSideProps: GetServerSideProps = async (ctx) => {
+//   const allowedIps = ['177.39.236.1'] as any
+//   const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
+//   if (!allowedIps.includes(ip)) {
+//     return {
+//       redirect: {
+//         destination: '/404',
+//         permanent: false,
+//       },
+//     }
+//   }
+//   return {
+//     props: {},
+//   }
+// }
