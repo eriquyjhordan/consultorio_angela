@@ -1,11 +1,14 @@
 import { Input, Select, DatePicker, Switch } from 'antd'
 import styles from './styles.module.sass'
 import { selectOptions } from '../../resources/data/selectOptions'
-import { useContext, useEffect } from 'react'
-import { OperationsStoreContext } from '../../store'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { updateOperationsWindowValue } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import type { RootState } from '../../app/GlobalRedux/store';
 
 export function ClientInfos() {
-  const operation = useContext(OperationsStoreContext)
+  const operation = useSelector((state: RootState) => state.operation);
+  const dispatch = useDispatch();
   const filter = (input: any, option: any) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
 
@@ -16,53 +19,60 @@ export function ClientInfos() {
 
   useEffect(() => {
     try {
-      if (operation.tipo === 'Compra') {
-        operation.updateOperationsWindowValue(
-          'spread',
-          `${(Number(operation.taxa_final) / Number(operation.spot) - 1) * 100}`
-        )
-      } else {
-        operation.updateOperationsWindowValue(
-          'spread',
-          `${(Number(operation.spot) / Number(operation.taxa_final) - 1) * 100}`
-        )
+      if (operation.tipo === 'Compra' && operation.spot !== '' && operation.taxa_final !== '') {
+        dispatch(updateOperationsWindowValue({
+          property: 'spread',
+          value: `${(Number(operation.taxa_final) / Number(operation.spot) - 1) * 100}`
+        }))
+      } else if (operation.tipo === 'Venda' && operation.spot !== '' && operation.taxa_final !== '') {
+        dispatch(updateOperationsWindowValue({
+          property: 'spread',
+          value: `${(Number(operation.spot) / Number(operation.taxa_final) - 1) * 100}`
+        }))
       }
     } catch (error) {
-      operation.updateOperationsWindowValue('spread', 0)
+      dispatch(updateOperationsWindowValue({
+        property: 'spread',
+        value: 0
+      }))
     }
   }, [operation.taxa_final, operation.spot, operation.tipo])
 
   useEffect(() => {
     try {
       if (operation.tipo === 'Compra') {
-        operation.updateOperationsWindowValue(
-          'receita',
-          `${
-            (Number(operation.taxa_final) - Number(operation.spot)) *
-              Number(operation.volume) -
+        dispatch(updateOperationsWindowValue({
+          property: 'receita',
+          value: `${(Number(operation.taxa_final) - Number(operation.spot)) *
+            Number(operation.volume) -
             Number(operation.despesas)
-          }`
-        )
+            }`
+        }))
       } else {
-        operation.updateOperationsWindowValue(
-          'receita',
-          `${
-            (Number(operation.spot) - Number(operation.taxa_final)) *
-              Number(operation.volume) -
+        dispatch(updateOperationsWindowValue({
+          property: 'receita',
+          value: `${(Number(operation.spot) - Number(operation.taxa_final)) *
+            Number(operation.volume) -
             Number(operation.despesas)
-          }`
-        )
+            }`
+        }))
       }
     } catch (error) {
-      operation.updateOperationsWindowValue('receita', 0)
+      console.log('error ao registrar receita', error)
+      dispatch(updateOperationsWindowValue({
+        property: 'receita',
+        value: 0
+      }))
     }
   }, [operation.taxa_final, operation.spot, operation.tipo, operation.volume])
 
   useEffect(() => {
-    operation.updateOperationsWindowValue(
-      'volumeFinanceiro',
-      `${Number(operation.volume) * Number(operation.taxa_final)}`
-    )
+    if (operation.volume !== '' && operation.taxa_final !== '') {
+      dispatch(updateOperationsWindowValue({
+        property: 'volumeFinanceiro',
+        value: `${Number(operation.volume) * Number(operation.taxa_final)}`
+      }))
+    }
   }, [operation.volume, operation.taxa_final])
 
   return (
@@ -77,10 +87,10 @@ export function ClientInfos() {
             value={operation.nomeCliente}
             disabled={!operation.isNotBtgClient}
             onChange={(e) =>
-              operation.updateOperationsWindowValue(
-                'nomeCliente',
-                e.target.value
-              )
+              dispatch(updateOperationsWindowValue({
+                property: 'nomeCliente',
+                value: e.target.value
+              }))
             }
           />
         </label>
@@ -97,7 +107,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.tipoDePessoa}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('tipoDePessoa', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'tipoDePessoa',
+                value
+              }))
             }
           />
         </label>
@@ -110,10 +123,10 @@ export function ClientInfos() {
           disabled={!operation.isNotBtgClient}
           value={operation.documentoDoCliente}
           onChange={(e) =>
-            operation.updateOperationsWindowValue(
-              'documentoDoCliente',
-              e.target.value
-            )
+            dispatch(updateOperationsWindowValue({
+              property: 'documentoDoCliente',
+              value: e.target.value
+            }))
           }
         />
       </label>
@@ -131,7 +144,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.banker}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('banker', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'banker',
+                value
+              }))
             }
           />
         </label>
@@ -148,7 +164,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.originador}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('originador', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'originador',
+                value
+              }))
             }
           />
         </label>
@@ -165,7 +184,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.franquia}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('franquia', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'franquia',
+                value
+              }))
             }
           />
         </label>
@@ -184,7 +206,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.filial}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('filial', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'filial',
+                value
+              }))
             }
           />
         </label>
@@ -201,7 +226,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.polo}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('polo', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'polo',
+                value
+              }))
             }
           />
         </label>
@@ -218,7 +246,10 @@ export function ClientInfos() {
             filterSort={sort}
             value={operation.estado}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('estado', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'estado',
+                value
+              }))
             }
           />
         </label>
@@ -230,12 +261,12 @@ export function ClientInfos() {
           disabled
           className={styles.input}
           type="text"
-          value={`${(
-            (Number(operation.taxa_final) / Number(operation.spot) - 1) *
-            100
-          ).toFixed(4)} %`}
+          value={`${Number(operation.spread).toFixed(4)} %`}
           onChange={(e) =>
-            operation.updateOperationsWindowValue('spread', e.target.value)
+            dispatch(updateOperationsWindowValue({
+              property: 'spread',
+              value: e.target.value
+            }))
           }
         />
       </label>
@@ -245,14 +276,12 @@ export function ClientInfos() {
           className={styles.input}
           type="text"
           disabled
-          value={`R$ ${(
-            Number(operation.volume) * Number(operation.taxa_final)
-          ).toLocaleString()}`}
+          value={`R$ ${operation.volumeFinanceiro}`}
           onChange={(e) =>
-            operation.updateOperationsWindowValue(
-              'volumeFinanceiro',
-              e.target.value
-            )
+            dispatch(updateOperationsWindowValue({
+              property: 'volumeFinanceiro',
+              value: e.target.value
+            }))
           }
         />
       </label>
@@ -262,13 +291,12 @@ export function ClientInfos() {
           className={styles.input}
           type="text"
           disabled
-          value={`R$ ${(
-            (Number(operation.taxa_final) - Number(operation.spot)) *
-              Number(operation.volume) -
-            Number(operation.despesas)
-          ).toLocaleString()}`}
+          value={`R$ ${Number(operation.receita).toFixed(2)}`}
           onChange={(e) =>
-            operation.updateOperationsWindowValue('receita', e.target.value)
+            dispatch(updateOperationsWindowValue({
+              property: 'receita',
+              value: e.target.value
+            }))
           }
         />
       </label>

@@ -8,12 +8,15 @@ import {
 import styles from './styles.module.sass'
 import { OperationInformation } from '../OperationInformation'
 import { ClientInfos } from '../ClientInfos'
-import { useContext, useEffect, useState } from 'react'
-import { OperationsStoreContext } from '../../store'
+import { useEffect, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import { SuccessMessage } from '../ConfimationScreen'
 import dayjs from 'dayjs'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSelector, useDispatch } from 'react-redux';
+import { updateOperationsWindowValue, resetOperationsWindow, updataValuesToEdit } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import type { RootState } from '../../app/GlobalRedux/store';
+
 
 interface ModalProps {
   isModalOpen: boolean
@@ -21,16 +24,17 @@ interface ModalProps {
 }
 
 export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
+  const operation = useSelector((state: RootState) => state.operation);
+  const dispatch = useDispatch();
   const supabase = createClientComponentClient()
   const [userEmail, setuserEmail] = useState('')
-  const operation = useContext(OperationsStoreContext)
   const [operationType, setOperationType] = useState<
     'Cadastro' | 'Edição' | 'Exclusão'
   >('Cadastro')
   const [status, setStatus] = useState<'success' | 'error'>('success')
 
   const handleOk = () => {
-    operation.updateOperationsWindowValue('isModalOpen', false)
+    dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: false }))
   }
 
   useEffect(() => {
@@ -38,61 +42,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
       try {
         const { data } = await supabase.from('exchange_control').select('*').eq('exchange_control_id', exchangeControlId)
         if (data) {
-          operation.updateOperationsWindowValue('account', data[0].account_number)
-          operation.updateOperationsWindowValue('banker', data[0].banker_id)
-          operation.updateOperationsWindowValue(
-            'documentoDoCliente',
-            data[0].investor_document
-          )
-          operation.updateOperationsWindowValue(
-            'nomeCliente',
-            data[0].investor_full_name
-          )
-          operation.updateOperationsWindowValue(
-            'tipoDePessoa',
-            data[0].investor_type
-          )
-          operation.updateOperationsWindowValue('filial', data[0].office_id)
-          operation.updateOperationsWindowValue('banco', data[0].operation_bank)
-          operation.updateOperationsWindowValue(
-            'operacao',
-            data[0].operation_category
-          )
-          operation.updateOperationsWindowValue('moeda', data[0].operation_currency)
-          operation.updateOperationsWindowValue(
-            'dataDeFechamento',
-            data[0].operation_date
-          )
-          operation.updateOperationsWindowValue(
-            'despesas',
-            data[0].operation_expenses
-          )
-          operation.updateOperationsWindowValue(
-            'taxa_final',
-            data[0].operation_final_rate
-          )
-          operation.updateOperationsWindowValue(
-            'volumeFinanceiro',
-            data[0].operation_financial_volume
-          )
-          operation.updateOperationsWindowValue(
-            'dataDeLiquidacao',
-            data[0].operation_liquidity_date
-          )
-          operation.updateOperationsWindowValue(
-            'natureza',
-            data[0].operation_nature
-          )
-          operation.updateOperationsWindowValue(
-            'receita',
-            data[0].operation_revenue
-          )
-          operation.updateOperationsWindowValue('spot', data[0].operation_spot)
-          operation.updateOperationsWindowValue('spread', data[0].operation_spread)
-          operation.updateOperationsWindowValue('tipo', data[0].operation_type)
-          operation.updateOperationsWindowValue('volume', data[0].operation_volume)
-          operation.updateOperationsWindowValue('franquia', data[0].segment_id)
-          operation.updateOperationsWindowValue('originador', data[0].originator_id)
+          dispatch(updataValuesToEdit(data[0]))
         } else {
           throw new Error('Não foi possível encontrar a operação')
         }
@@ -118,10 +68,10 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
 
   function handleCancel() {
     exchangeControlId = undefined
-    operation.resetOperationsWindow()
-    operation.updateOperationsWindowValue('fetchData', !operation.fetchData)
-    operation.updateOperationsWindowValue('isModalOpen', false)
-    operation.updateOperationsWindowValue('isSuccessScreenOpen', false)
+    dispatch(resetOperationsWindow())
+    dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+    dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: false }))
+    dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: false }))
   }
 
   async function handleSave() {
@@ -162,14 +112,14 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         ? setOperationType('Edição')
         : setOperationType('Cadastro')
       setStatus('success')
-      operation.updateOperationsWindowValue('isSuccessScreenOpen', true)
+      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     } catch (error) {
       console.log('error', error)
       exchangeControlId
         ? setOperationType('Edição')
         : setOperationType('Cadastro')
       setStatus('error')
-      operation.updateOperationsWindowValue('isSuccessScreenOpen', true)
+      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     }
   }
   
@@ -183,12 +133,12 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
       console.log('handle delete: ', data)
       setOperationType('Exclusão')
       setStatus('success')
-      operation.updateOperationsWindowValue('isSuccessScreenOpen', true)
+      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     } catch (error) {
       console.log('error', error)
       setOperationType('Exclusão')
       setStatus('error')
-      operation.updateOperationsWindowValue('isSuccessScreenOpen', true)
+      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     }
   }
 
@@ -199,7 +149,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         onOk={handleOk}
         onCancel={handleCancel}
         width={1200}
-        style={{ top: 15 }}
+        style={{ top: 20 }}
         okButtonProps={{ style: { display: 'none' } }}
         cancelButtonProps={{ style: { display: 'none' } }}
       >
@@ -233,10 +183,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
                       disabled={operation.account ?  operation.account.length > 0 : false}
                       checked={operation.isNotBtgClient}
                       onClick={() =>
-                        operation.updateOperationsWindowValue(
-                          'isNotBtgClient',
-                          !operation.isNotBtgClient
-                        )
+                        dispatch(updateOperationsWindowValue({ property: 'isNotBtgClient', value: !operation.isNotBtgClient }))
                       }
                     />
                   </ConfigProvider>
@@ -263,7 +210,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
                       </Popconfirm>
                     </ConfigProvider>
                   )}
-                  <Button onClick={() => operation.resetOperationsWindow()}>
+                  <Button onClick={() => dispatch(resetOperationsWindow())}>
                     Limpar
                   </Button>
                   <Button

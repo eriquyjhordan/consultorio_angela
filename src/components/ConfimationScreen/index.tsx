@@ -2,22 +2,20 @@ import { useContext } from 'react'
 import styles from './styles.module.sass'
 
 import { Button, ConfigProvider, Result } from 'antd'
-import { OperationsStoreContext } from '../../store'
-
+import { useSelector, useDispatch } from 'react-redux';
+import { updateOperationsWindowValue, resetOperationsWindow } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import type { RootState } from '../../app/GlobalRedux/store';
 interface SuccessMessageProps {
   operationType: 'Cadastro' | 'Edição' | 'Exclusão'
   status: 'success' | 'error'
 }
 
 export function SuccessMessage({ operationType, status }: SuccessMessageProps) {
-  const operation = useContext(OperationsStoreContext)
-
+  const operation = useSelector((state: RootState) => state.operation);
+  const dispatch = useDispatch();
   function handleBack() {
-    operation.updateOperationsWindowValue('fetchData', !operation.fetchData)
-    operation.updateOperationsWindowValue('isSuccessScreenOpen', false)
-    operation.updateOperationsWindowValue('isModalOpen', false)
-    operation.resetOperationsWindow()
-    operation.updateOperationsWindowValue('fetchData', !operation.fetchData)
+    dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+    dispatch(resetOperationsWindow())
   }
 
   return (

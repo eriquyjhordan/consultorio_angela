@@ -4,18 +4,18 @@ import dayjs from 'dayjs'
 import { Input, Select, DatePicker } from 'antd'
 import { selectOptions } from '../../resources/data/selectOptions'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { OperationsStoreContext } from '../../store'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSelector, useDispatch } from 'react-redux';
+import { updateOperationsWindowValue, updateAccountDataValues } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import type { RootState } from '../../app/GlobalRedux/store';
 
 dayjs.extend(customParseFormat)
 const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY']
 
 export function OperationInformation() {
+  const operation = useSelector((state: RootState) => state.operation);
+  const dispatch = useDispatch();
   const supabase = createClientComponentClient()
-  const apikey = ''
-  const token = ''
-
-  const operation = useContext(OperationsStoreContext)
   const filter = (input: any, option: any) =>
     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
 
@@ -30,29 +30,7 @@ export function OperationInformation() {
         const { data } = await supabase.from('client_area').select('*').eq('account_number', account_number)
         if (data) {
           if (data.length > 0) {
-            operation.updateOperationsWindowValue(
-              'nomeCliente',
-              data[0].investor_full_name
-            )
-            operation.updateOperationsWindowValue(
-              'tipoDePessoa',
-              data[0].investor_document.length > 11 ? 'PJ' : 'PF'
-            )
-            operation.updateOperationsWindowValue(
-              'documentoDoCliente',
-              data[0].investor_document
-            )
-            operation.updateOperationsWindowValue('banker', data[0].banker_id)
-            operation.updateOperationsWindowValue(
-              'originador',
-              data[0].originator_id
-            )
-            operation.updateOperationsWindowValue('franquia', data[0].segment_id)
-            operation.updateOperationsWindowValue('filial', data[0].office_id)
-            operation.updateOperationsWindowValue('polo', data[0].office_id)
-            operation.updateOperationsWindowValue('estado', data[0].state_id)
-    
-            console.log(data)
+            dispatch(updateAccountDataValues(data[0]))
           }
         } else {
           throw new Error('Nenhum dado encontrado')
@@ -64,6 +42,7 @@ export function OperationInformation() {
     searchByAccountNumber(operation.account)
   }, [operation.account])
 
+  console.log('taxa final: ', operation.taxa_final)
   return (
     <div className={styles.inputs}>
       <h2 className={styles.subTitle}>Informações da conta</h2>
@@ -76,7 +55,10 @@ export function OperationInformation() {
           maxLength={9}
           value={operation.account}
           onChange={(e) =>
-            operation.updateOperationsWindowValue('account', e.target.value)
+            dispatch(updateOperationsWindowValue({
+              property: 'account',
+              value: e.target.value
+            }))
           }
         />
       </label>
@@ -94,7 +76,10 @@ export function OperationInformation() {
           filterSort={sort}
           value={operation.banco}
           onChange={(value) =>
-            operation.updateOperationsWindowValue('banco', value)
+            dispatch(updateOperationsWindowValue({
+              property: 'banco',
+              value: value
+            }))
           }
         />
       </label>
@@ -112,7 +97,10 @@ export function OperationInformation() {
             filterSort={sort}
             value={operation.tipo}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('tipo', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'tipo',
+                value,
+              }))
             }
           />
         </label>
@@ -129,7 +117,10 @@ export function OperationInformation() {
             filterSort={sort}
             value={operation.operacao}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('operacao', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'operacao',
+                value,
+              }))
             }
           />
         </label>
@@ -146,7 +137,10 @@ export function OperationInformation() {
             filterSort={sort}
             value={operation.natureza}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('natureza', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'natureza',
+                value,
+              }))
             }
           />
         </label>
@@ -165,7 +159,10 @@ export function OperationInformation() {
             filterSort={sort}
             value={operation.moeda}
             onChange={(value) =>
-              operation.updateOperationsWindowValue('moeda', value)
+              dispatch(updateOperationsWindowValue({
+                property: 'moeda',
+                value,
+              }))
             }
           />
         </label>
@@ -177,7 +174,10 @@ export function OperationInformation() {
             type="text"
             value={operation.volume}
             onChange={(e) =>
-              operation.updateOperationsWindowValue('volume', e.target.value)
+              dispatch(updateOperationsWindowValue({
+                property: 'volume',
+                value: e.target.value
+              }))
             }
           />
         </label>
@@ -191,7 +191,10 @@ export function OperationInformation() {
             type="text"
             value={operation.spot}
             onChange={(e) =>
-              operation.updateOperationsWindowValue('spot', e.target.value)
+              dispatch(updateOperationsWindowValue({
+                property: 'spot',
+                value: e.target.value
+              }))
             }
           />
         </label>
@@ -203,10 +206,10 @@ export function OperationInformation() {
             type="text"
             value={operation.taxa_final}
             onChange={(e) =>
-              operation.updateOperationsWindowValue(
-                'taxa_final',
-                e.target.value
-              )
+              dispatch(updateOperationsWindowValue({
+                property: 'taxa_final',
+                value: e.target.value
+              }))
             }
           />
         </label>
@@ -219,7 +222,10 @@ export function OperationInformation() {
           type="text"
           value={operation.despesas}
           onChange={(e) =>
-            operation.updateOperationsWindowValue('despesas', e.target.value)
+            dispatch(updateOperationsWindowValue({
+              property: 'despesas',
+              value: e.target.value
+            }))
           }
         />
       </label>
@@ -235,10 +241,10 @@ export function OperationInformation() {
                 : undefined
             }
             onChange={(value) =>
-              operation.updateOperationsWindowValue(
-                'dataDeFechamento',
-                dayjs(value)
-              )
+              dispatch(updateOperationsWindowValue({
+                property: 'dataDeFechamento',
+                value: dayjs(value)
+              }))
             }
           />
         </label>
@@ -253,10 +259,10 @@ export function OperationInformation() {
                 : undefined
             }
             onChange={(value) =>
-              operation.updateOperationsWindowValue(
-                'dataDeLiquidacao',
-                dayjs(value)
-              )
+              dispatch(updateOperationsWindowValue({
+                property: 'dataDeLiquidacao',
+                value: dayjs(value)
+              }))
             }
           />
         </label>

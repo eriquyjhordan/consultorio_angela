@@ -1,6 +1,5 @@
 'use client'
 import React, { useContext, useEffect, useState } from 'react';
-import { OperationsStoreContext } from '../../store';
 import styles from '../styles/table.module.sass'
 import { LeftOutlined } from '@ant-design/icons'
 import { Modal } from '../../components/CreateModal'
@@ -9,10 +8,14 @@ import dayjs from 'dayjs'
 import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useSelector, useDispatch } from 'react-redux';
+import { resetOperationsWindow, updateOperationsWindowValue } from '../GlobalRedux/Features/operation/operationSlice';
+import type { RootState } from '../GlobalRedux/store';
 
 function TableScreen() {
+  const operation = useSelector((state: RootState) => state.operation);
+  const dispatch = useDispatch();
   const supabase = createClientComponentClient()
-  const operation = useContext(OperationsStoreContext)
   const [exchangeControlId, setExchangeControlId] = useState('')
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([])
@@ -26,8 +29,9 @@ function TableScreen() {
 
   const handleEdit = (item: any) => {
     setExchangeControlId(item.id)
-    operation.updateOperationsWindowValue('isModalOpen', true)
+    dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
+  
   const handlePageChange = async (page: any) => {
     setLoading(true)
     const startRange = (page - 1) * itemsPerPage
@@ -128,6 +132,11 @@ function TableScreen() {
     },
   ]
 
+  function createNewItem() {
+    setExchangeControlId('')
+    dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
+  }
+
   useEffect(() => {
     async function getTotalPages() {
       setLoading(true)
@@ -144,7 +153,6 @@ function TableScreen() {
       .select('*')
       .neq('is_deleted', true)
       .gte('operation_date', `${anoAtual}-${mesAtual}-01`) as any
-      console.log('data: ',data)
       const somaVolumeFinanceiro = data.reduce(
         (acc: any, item: any) =>
           Number(acc) + Number(item.operation_financial_volume),
@@ -247,10 +255,7 @@ function TableScreen() {
         </div>
         <div className={styles.bottom}>
           <button
-            onClick={() => {
-              setExchangeControlId('')
-              operation.updateOperationsWindowValue('isModalOpen', true)
-            }}
+            onClick={createNewItem}
             className={styles.button}
             type="button"
           >
@@ -271,7 +276,7 @@ export default TableScreen;
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const allowedIps = ['177.39.236.1'] as any
   const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
-  if (!allowedIps.includes(ip)) {
+  if (allowedIps.includes(ip)) {
     return {
       redirect: {
         destination: '/404',

@@ -2,7 +2,6 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next'
-// import { supabase } from '../../supabase/supabaseClient'
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import styles from './styles/home.module.sass'
@@ -67,7 +66,7 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const allowedIps = ['177.39.236.1'] as any
   const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
-  if (!allowedIps.includes(ip)) {
+  if (allowedIps.includes(ip)) {
     return {
       redirect: {
         destination: '/404',
