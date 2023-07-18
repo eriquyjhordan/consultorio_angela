@@ -112,6 +112,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         ? setOperationType('Edição')
         : setOperationType('Cadastro')
       setStatus('success')
+      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
       dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     } catch (error) {
       console.log('error', error)
@@ -119,6 +120,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         ? setOperationType('Edição')
         : setOperationType('Cadastro')
       setStatus('error')
+      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
       dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     }
   }
@@ -133,12 +135,14 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
       console.log('handle delete: ', data)
       setOperationType('Exclusão')
       setStatus('success')
+      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
       dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     } catch (error) {
       console.log('error', error)
       setOperationType('Exclusão')
       setStatus('error')
       dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
+      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
     }
   }
 
