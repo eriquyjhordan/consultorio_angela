@@ -133,6 +133,9 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         .eq('exchange_control_id', exchangeControlId)
         .select()
       console.log('handle delete: ', data)
+      if (error) {
+        throw new Error('Não foi possível excluir a operação')
+      }
       setOperationType('Exclusão')
       setStatus('success')
       dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
