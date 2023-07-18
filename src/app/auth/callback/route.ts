@@ -10,5 +10,5 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  return NextResponse.redirect(`https://exhange-app.netlify.app/table`)
+  return NextResponse.redirect(`https://exchange-apx-app.netlify.app/table`)
 }
