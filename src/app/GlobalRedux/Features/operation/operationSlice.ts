@@ -31,6 +31,7 @@ interface OperationsStore {
     fetchData: boolean;
     isModalOpen: boolean;
     isSuccessScreenOpen: boolean;
+    exchangeId?: string;
 }
 
 const initialState: OperationsStore = {
@@ -62,6 +63,7 @@ const initialState: OperationsStore = {
     isNotBtgClient: false,
     isModalOpen: false,
     isSuccessScreenOpen: false,
+    exchangeId: undefined,
 };
 const operationsSlice = createSlice({
     name: 'operations',

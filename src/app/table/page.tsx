@@ -16,7 +16,6 @@ function TableScreen() {
   const operation = useSelector((state: RootState) => state.operation);
   const dispatch = useDispatch();
   const supabase = createClientComponentClient()
-  const [exchangeControlId, setExchangeControlId] = useState('')
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([])
   const [totalPages, setTotalPages] = useState(0)
@@ -28,7 +27,7 @@ function TableScreen() {
   const itemsPerPage = 9
 
   const handleEdit = (item: any) => {
-    setExchangeControlId(item.id)
+    dispatch(updateOperationsWindowValue({ property: 'exchangeId', value: item.id }))
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
   
@@ -133,7 +132,7 @@ function TableScreen() {
   ]
 
   function createNewItem() {
-    setExchangeControlId('')
+    dispatch(resetOperationsWindow())
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
 
@@ -265,26 +264,9 @@ function TableScreen() {
       </div>
       <Modal
         isModalOpen={operation.isModalOpen}
-        exchangeControlId={exchangeControlId}
       />
     </div>
   )
 }
 
 export default TableScreen;
-
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const allowedIps = ['177.39.236.1'] as any
-//   const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
-//   if (!allowedIps.includes(ip)) {
-//     return {
-//       redirect: {
-//         destination: '/404',
-//         permanent: false,
-//       },
-//     }
-//   }
-//   return {
-//     props: {},
-//   }
-// }

@@ -20,10 +20,9 @@ import type { RootState } from '../../app/GlobalRedux/store';
 
 interface ModalProps {
   isModalOpen: boolean
-  exchangeControlId?: string
 }
 
-export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
+export function Modal({ isModalOpen }: ModalProps) {
   const operation = useSelector((state: RootState) => state.operation);
   const dispatch = useDispatch();
   const supabase = createClientComponentClient()
@@ -40,7 +39,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
   useEffect(() => {
     async function fetchExchangeControl() {
       try {
-        const { data } = await supabase.from('exchange_control').select('*').eq('exchange_control_id', exchangeControlId)
+        const { data } = await supabase.from('exchange_control').select('*').eq('exchange_control_id', operation.exchangeId)
         if (data) {
           dispatch(updataValuesToEdit(data[0]))
         } else {
@@ -60,14 +59,13 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         console.log('error', error)
       }
     }
-    if (exchangeControlId) {
+    if (operation.exchangeId) {
       fetchExchangeControl()
     }
     getUserEmail()
-  }, [exchangeControlId])
+  }, [operation.exchangeId])
 
   function handleCancel() {
-    exchangeControlId = undefined
     dispatch(resetOperationsWindow())
     dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: false }))
@@ -79,8 +77,8 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
       const response = await supabase.from('exchange_control').upsert({
         account_number: operation.account,
         banker_id: operation.banker,
-        exchange_control_id: exchangeControlId
-          ? exchangeControlId
+        exchange_control_id: operation.exchangeId
+          ? operation.exchangeId
           : `exchange_control_${uuid()}`,
         investor_document: operation.documentoDoCliente,
         investor_full_name: operation.nomeCliente,
@@ -108,7 +106,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
         segment_id: operation.franquia,
         operator: userEmail,
       }).select()
-      exchangeControlId
+      operation.exchangeId
         ? setOperationType('Edição')
         : setOperationType('Cadastro')
       setStatus('success')
@@ -116,7 +114,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
       dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
     } catch (error) {
       console.log('error', error)
-      exchangeControlId
+      operation.exchangeId
         ? setOperationType('Edição')
         : setOperationType('Cadastro')
       setStatus('error')
@@ -130,7 +128,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
       const { data, error } = await supabase
         .from('exchange_control')
         .update({ is_deleted: true, updated_at: new Date(), operator: userEmail })
-        .eq('exchange_control_id', exchangeControlId)
+        .eq('exchange_control_id', operation.exchangeId)
         .select()
       console.log('handle delete: ', data)
       if (error) {
@@ -197,7 +195,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
                 </div>
                 <div className={styles.buttons}>
                   <Button onClick={handleCancel}>Cancelar</Button>
-                  {exchangeControlId && (
+                  {operation.exchangeId && (
                     <ConfigProvider
                       theme={{
                         token: {
@@ -225,7 +223,7 @@ export function Modal({ isModalOpen, exchangeControlId }: ModalProps) {
                     type="primary"
                     className={styles.confirmationBtn}
                   >
-                    {exchangeControlId ? 'Salvar' : 'Cadastrar'}
+                    {operation.exchangeId ? 'Salvar' : 'Cadastrar'}
                   </Button>
                 </div>
                 <div></div>
