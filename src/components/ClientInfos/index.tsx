@@ -64,7 +64,7 @@ export function ClientInfos() {
         value: 0
       }))
     }
-  }, [operation.taxa_final, operation.spot, operation.tipo, operation.volume])
+  }, [operation.taxa_final, operation.spot, operation.tipo, operation.volume, operation.despesas])
 
   useEffect(() => {
     if (operation.volume !== '' && operation.taxa_final !== '') {
