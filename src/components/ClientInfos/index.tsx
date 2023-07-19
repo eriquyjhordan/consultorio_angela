@@ -44,16 +44,14 @@ export function ClientInfos() {
         dispatch(updateOperationsWindowValue({
           property: 'receita',
           value: `${(((Number(operation.taxa_final) - Number(operation.spot)) *
-            Number(operation.volume) -
-            Number(operation.despesas))/ 2) - (Number(operation.despesas)/2)
+            Number(operation.volume)) / 2) - (Number(operation.despesas))
             }`
         }))
       } else {
         dispatch(updateOperationsWindowValue({
           property: 'receita',
           value: `${(((Number(operation.spot) - Number(operation.taxa_final)) *
-            Number(operation.volume) -
-            Number(operation.despesas))/2) - (Number(operation.despesas)/2)
+            Number(operation.volume))/2) - (Number(operation.despesas))
             }`
         }))
       }
