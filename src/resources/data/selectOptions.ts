@@ -25,6 +25,7 @@ export const selectOptions = {
   natureza: [
     { value: 'Importação', label: 'Importação' },
     { value: 'Exportação', label: 'Exportação' },
+    { value: 'Remessa', label: 'Remessa' },
   ],
   tipoPessoa: [
     { value: 'Pessoa Física', label: 'PF' },
