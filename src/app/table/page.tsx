@@ -166,7 +166,7 @@ function TableScreen() {
         0
       )
       const qtdOperacoes = data.length
-      setAverageSpread((somaSpread / qtdOperacoes) * 100)
+      setAverageSpread((somaSpread / qtdOperacoes))
       setOperationCount(qtdOperacoes)
       setSumRevenue(somaReceita)
       setSumFinantialVolume(somaVolumeFinanceiro)
