@@ -165,8 +165,14 @@ function TableScreen() {
         (acc: any, item: any) => Number(acc) + Number(item.operation_spread),
         0
       )
+
+      const sumVolumeTimesSpread = data.reduce(
+        (acc: any, item: any) => Number(acc) + (Number(item.operation_spread) * Number(item.operation_financial_volume)),
+        0
+      )
+
       const qtdOperacoes = data.length
-      setAverageSpread((somaSpread / qtdOperacoes))
+      setAverageSpread((sumVolumeTimesSpread / somaVolumeFinanceiro))
       setOperationCount(qtdOperacoes)
       setSumRevenue(somaReceita)
       setSumFinantialVolume(somaVolumeFinanceiro)
