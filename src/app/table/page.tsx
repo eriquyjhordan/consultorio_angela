@@ -47,7 +47,7 @@ function TableScreen() {
         name: item.investor_full_name.substring(0, 34) + '...',
         natureza: item.operation_nature,
         moeda: item.operation_currency,
-        data_fech: dayjs(item.operation_date).toDate().toLocaleDateString(),
+        data_fech: dayjs(item.operation_date).format('DD/MM/YYYY'),
         volume_qtd: Number(item.operation_volume).toLocaleString(),
         volume_fin: `R$ ${Number(
           item.operation_financial_volume
