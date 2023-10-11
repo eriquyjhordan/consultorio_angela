@@ -3,6 +3,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface OperationsStore {
+    cep: string;
+    street: string;
+    neighborhood: string;
+    city: string;
+    state: string;
     account: string;
     banco: string;
     tipo: string;
@@ -35,6 +40,11 @@ interface OperationsStore {
 }
 
 const initialState: OperationsStore = {
+    cep: '',
+    street: '',
+    neighborhood: '',
+    city: '',
+    state: '',
     account: '',
     banco: '',
     tipo: '',
@@ -78,6 +88,11 @@ const operationsSlice = createSlice({
         },
         updataValuesToEdit: (state: OperationsStore, action: PayloadAction<any>) => {
             const exchangeControlData = action.payload;
+            state.cep = exchangeControlData.cep;
+            state.street = exchangeControlData.street;
+            state.neighborhood = exchangeControlData.neighborhood;
+            state.city = exchangeControlData.city;
+            state.state = exchangeControlData.state_id;
             state.account = exchangeControlData.account_number;
             state.banker = exchangeControlData.banker_id;
             state.documentoDoCliente = exchangeControlData.investor_document;
@@ -103,15 +118,6 @@ const operationsSlice = createSlice({
           },
         updateAccountDataValues: (state: OperationsStore, action: PayloadAction<any>) => {
             const accountData = action.payload;
-            state.nomeCliente = accountData.investor_full_name;
-            state.tipoDePessoa = accountData.investor_document.length > 11 ? 'PJ' : 'PF';
-            state.documentoDoCliente = accountData.investor_document;
-            state.banker = accountData.banker_id;
-            state.originador = accountData.originator_id;
-            state.franquia = accountData.segment_id;
-            state.filial = accountData.office_id;
-            state.polo = accountData.office_id;
-            state.estado = accountData.state_id;
         },
         resetOperationsWindow: (state) => {
             return initialState;

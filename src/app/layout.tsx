@@ -7,8 +7,8 @@ import Head from 'next/head';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Exchange App | Apx Invest',
-  description: 'An app to manage your exchange operations',
+  title: 'Angela Maria',
+  description: '',
 }
 
 export default function RootLayout({

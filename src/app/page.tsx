@@ -1,39 +1,41 @@
 'use client'
 import Image from 'next/image'
-import { useEffect, useState } from 'react';
-// import { GetServerSideProps } from 'next'
+import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Spin } from 'antd';
+import { Input, Spin } from 'antd';
 import styles from './styles/home.module.sass'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const supabase = createClientComponentClient()
-  async function handleLogInAzure() {
-    try {
-      setIsLoading(true)
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'azure',   
-        options: {
-          scopes: 'email',
-          redirectTo: `${location.origin}/auth/callback`
-        },
-      },)
-    } catch (error) {
-        console.log(error)
-        return
+  const router = useRouter();
+
+  async function handleLogin(e: any) {
+    e.preventDefault()
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+    if (error) {
+      alert(error.message)
+      setIsLoading(false);
     }
+    router.push('/table');
   }
+
   return (
     <>
       <div className={styles.wrapper}>
         <div className={styles.leftBox}>
-          <h1 className={styles.title}>Controle Câmbio</h1>
+          <h1 className={styles.title}>Controle de Clientes</h1>
           <div className={styles.image}>
             <Image
-              src="/images/apxazulbranco.png"
+              src="/images/logo_angela.png"
               alt="Logo APX azul PNG"
               className={styles.apxLogo}
               width={464}
@@ -45,36 +47,38 @@ export default function Home() {
             <p className={styles.userName}></p>
           </div>
         </div>
-        <div className={styles.rightBox}>
-          <h2 className={styles.rightTitle}>Operacional</h2>
-          <button onClick={handleLogInAzure} className={styles.button} type="button">
+        <form className={styles.rightBox}>
+          <h2 className={styles.rightTitle}>Login</h2>
+          <label className={styles.labelBox}>
+            <span className={styles.label}>Email</span>
+            <Input
+              className={styles.input}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </label>
+          <label className={styles.labelBox}>
+            <span className={styles.label}>Senha</span>
+            <Input
+              className={styles.input}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} 
+            />
+          </label>
+          <button onClick={handleLogin} className={styles.button} type="submit">
             {
               isLoading ? (
                 <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#fff' }} spin />} />
               ) : (
-                "Início"
+                "Entrar"
               )
             }
           </button>
           <div></div>
-        </div>
+        </form>
       </div>
     </>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const allowedIps = ['177.39.236.1'] as any
-//   const ip = ctx.req.headers['x-forwarded-for'] || ctx.req.socket.remoteAddress
-//   if (!allowedIps.includes(ip)) {
-//     return {
-//       redirect: {
-//         destination: '/404',
-//         permanent: false,
-//       },
-//     }
-//   }
-//   return {
-//     props: {},
-//   }
-// }

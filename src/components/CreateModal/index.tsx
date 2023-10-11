@@ -164,7 +164,7 @@ export function Modal({ isModalOpen }: ModalProps) {
           ) : (
             <>
               <div className={styles.header}>
-                <h1 className={styles.title}>Cadastro de Operações</h1>
+                <h1 className={styles.title}>Cadastro de Clientes</h1>
               </div>
               <div className={styles.infos}>
                 <OperationInformation />
@@ -172,27 +172,6 @@ export function Modal({ isModalOpen }: ModalProps) {
                 <ClientInfos />
               </div>
               <footer className={styles.footer}>
-                <div className={styles.switchBox}>
-                  <span>Não é Cliente BTG?</span>
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: '#0A489B',
-                      },
-                    }}
-                  >
-                    <Switch
-                      onChange={(checked) =>
-                        console.log(`switch to ${checked}`)
-                      }
-                      disabled={operation.account ?  operation.account.length > 0 : false}
-                      checked={operation.isNotBtgClient}
-                      onClick={() =>
-                        dispatch(updateOperationsWindowValue({ property: 'isNotBtgClient', value: !operation.isNotBtgClient }))
-                      }
-                    />
-                  </ConfigProvider>
-                </div>
                 <div className={styles.buttons}>
                   <Button onClick={handleCancel}>Cancelar</Button>
                   {operation.exchangeId && (
