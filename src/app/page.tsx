@@ -38,8 +38,8 @@ export default function Home() {
               src="/images/logo_angela.png"
               alt="Logo APX azul PNG"
               className={styles.apxLogo}
-              width={464}
-              height={96}
+              width={500}
+              height={350}
             />
           </div>
           <div className={styles.footer}>
