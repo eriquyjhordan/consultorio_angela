@@ -1,303 +1,167 @@
-import { Input, Select, DatePicker, Switch } from 'antd'
+import { Input, Switch } from 'antd'
 import styles from './styles.module.sass'
-import { selectOptions } from '../../resources/data/selectOptions'
-import { useEffect } from 'react'
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateOperationsWindowValue } from '../../app/GlobalRedux/Features/operation/operationSlice';
 import type { RootState } from '../../app/GlobalRedux/store';
 
+const { TextArea } = Input;
+
 export function ClientInfos() {
   const operation = useSelector((state: RootState) => state.operation);
   const dispatch = useDispatch();
-  const filter = (input: any, option: any) =>
-    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-
-  const sort = (optionA: any, optionB: any) =>
-    (optionA?.label ?? '')
-      .toLowerCase()
-      .localeCompare((optionB?.label ?? '').toLowerCase())
-
-  useEffect(() => {
-    try {
-      if (operation.tipo === 'Compra' && operation.spot !== '' && operation.taxa_final !== '') {
-        dispatch(updateOperationsWindowValue({
-          property: 'spread',
-          value: `${(Number(operation.taxa_final) / Number(operation.spot) - 1) * 100}`
-        }))
-      } else if (operation.tipo === 'Venda' && operation.spot !== '' && operation.taxa_final !== '') {
-        dispatch(updateOperationsWindowValue({
-          property: 'spread',
-          value: `${(Number(operation.spot) / Number(operation.taxa_final) - 1) * 100}`
-        }))
-      }
-    } catch (error) {
-      dispatch(updateOperationsWindowValue({
-        property: 'spread',
-        value: 0
-      }))
-    }
-  }, [operation.taxa_final, operation.spot, operation.tipo])
-
-  useEffect(() => {
-    try {
-      if (operation.tipo === 'Compra') {
-        dispatch(updateOperationsWindowValue({
-          property: 'receita',
-          value: `${(((Number(operation.taxa_final) - Number(operation.spot)) *
-            Number(operation.volume)) / 2) - (Number(operation.despesas))
-            }`
-        }))
-      } else {
-        dispatch(updateOperationsWindowValue({
-          property: 'receita',
-          value: `${(((Number(operation.spot) - Number(operation.taxa_final)) *
-            Number(operation.volume))/2) - (Number(operation.despesas))
-            }`
-        }))
-      }
-    } catch (error) {
-      console.log('error ao registrar receita', error)
-      dispatch(updateOperationsWindowValue({
-        property: 'receita',
-        value: 0
-      }))
-    }
-  }, [operation.taxa_final, operation.spot, operation.tipo, operation.volume, operation.despesas])
-
-  useEffect(() => {
-    if (operation.volume !== '' && operation.taxa_final !== '') {
-      dispatch(updateOperationsWindowValue({
-        property: 'volumeFinanceiro',
-        value: `${Number(operation.volume) * Number(operation.taxa_final)}`
-      }))
-    }
-  }, [operation.volume, operation.taxa_final])
 
   return (
     <div className={styles.outputs}>
-      <h2 className={styles.subTitle}>Cliente</h2>
-      <div className={styles.rowEqual}>
-        <label className={styles.labelBox}>
-          <span className={styles.label}>Nome</span>
-          <Input
-            className={styles.input}
-            type="text"
-            value={operation.nomeCliente}
-            disabled={!operation.isNotBtgClient}
-            onChange={(e) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'nomeCliente',
-                value: e.target.value
-              }))
-            }
+      <h2 className={styles.subTitle}>Diagnóstico</h2>
+      <h4 className={styles.diseaseText}>Tem alguma doença?</h4>
+      <div className={styles.diseasesBox}>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.vacinas}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'vacinas', value }))}
           />
-        </label>
-        <label className={styles.labelBox} style={{ maxWidth: '4rem' }}>
-          <span className={styles.label}>Tipo</span>
-          <Select
-            className={styles.input}
-            showSearch
-            style={{ width: '100%' }}
-            options={selectOptions.tipoPessoa}
-            optionFilterProp="children"
-            filterOption={filter}
-            disabled={!operation.isNotBtgClient}
-            filterSort={sort}
-            value={operation.tipoDePessoa}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'tipoDePessoa',
-                value
-              }))
-            }
+          <p className={styles.diseaseText}>Vacinas (Tétano)</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.alergias}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'alergias', value }))}
           />
-        </label>
+          <p className={styles.diseaseText}>Alergias</p>
+        </div>
+
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.cirurgias}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'cirurgias', value }))}
+          />
+          <p className={styles.diseaseText}>Cirurgias</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.hepatite}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'hepatite', value }))}
+          />
+          <p className={styles.diseaseText}>Hepatite A/B/C</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.diabetes}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'diabetes', value }))}
+          />
+          <p className={styles.diseaseText}>Diabetes</p>
+        </div>
+
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.hipertencao}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'hipertencao', value }))}
+          />
+          <p className={styles.diseaseText}>Hipertensão</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.doencasVasculares}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'doencasVasculares', value }))}
+          />
+          <p className={styles.diseaseText}>Doenças Vasculares</p>
+        </div>
+        <Input
+          className={styles.observations}
+          value={operation.diseaseObservation}
+          onChange={(e) => dispatch(updateOperationsWindowValue({ property: 'diseaseObservation', value: e.target.value }))}
+          style={{ gridColumnEnd: 'span 2' }} />
       </div>
-      <label className={styles.labelBox}>
-        <span className={styles.label}>Documento</span>
-        <Input
-          className={styles.input}
-          type="text"
-          disabled={!operation.isNotBtgClient}
-          value={operation.documentoDoCliente}
-          onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'documentoDoCliente',
-              value: e.target.value
-            }))
-          }
-        />
-      </label>
-      <div className={styles.rowEqual}>
-        <label className={styles.labelBox}>
-          <span className={styles.label}>Banker</span>
-          <Select
-            className={styles.input}
-            showSearch
-            disabled={!operation.isNotBtgClient}
-            style={{ width: '100%' }}
-            options={selectOptions.bankers}
-            optionFilterProp="children"
-            filterOption={filter}
-            filterSort={sort}
-            value={operation.banker}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'banker',
-                value
-              }))
-            }
+      <h2 className={styles.diseaseText}>Característica dos pés</h2>
+      <div className={styles.diseasesBox}>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.pePlano}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'pePlano', value }))}
           />
-        </label>
-        <label className={styles.labelBox}>
-          <span className={styles.label}>Originador</span>
-          <Select
-            className={styles.input}
-            showSearch
-            style={{ width: '100%' }}
-            disabled={!operation.isNotBtgClient}
-            options={selectOptions.bankers}
-            optionFilterProp="children"
-            filterOption={filter}
-            filterSort={sort}
-            value={operation.originador}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'originador',
-                value
-              }))
-            }
+          <p className={styles.diseaseText}>Pé plano</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.peValgo}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'peValgo', value }))}
           />
-        </label>
-        <label className={styles.labelBox} style={{ maxWidth: '4rem' }}>
-          <span className={styles.label}>Franquia</span>
-          <Select
-            className={styles.input}
-            showSearch
-            disabled={!operation.isNotBtgClient}
-            style={{ width: '100%' }}
-            options={selectOptions.franquia}
-            optionFilterProp="children"
-            filterOption={filter}
-            filterSort={sort}
-            value={operation.franquia}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'franquia',
-                value
-              }))
-            }
+          <p className={styles.diseaseText}>Pé Valgo</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.peCavo}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'peCavo', value }))}
           />
-        </label>
+          <p className={styles.diseaseText}>Pé cavo</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.peEsquino}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'peEsquino', value }))}
+          />
+          <p className={styles.diseaseText}>Pé equino</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.peVaro}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'peVaro', value }))}
+          />
+          <p className={styles.diseaseText}>Pé varo</p>
+        </div>
+        <div className={styles.diseasesItem}>
+          <Switch
+            checked={operation.halluxValgus}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={false}
+            onChange={(value) => dispatch(updateOperationsWindowValue({ property: 'halluxValgus', value }))}
+          />
+          <p className={styles.diseaseText}>Hallux Valgus</p>
+        </div>
       </div>
-      <div className={styles.rowEqual}>
-        <label className={styles.labelBox}>
-          <span className={styles.label}>Filial</span>
-          <Select
-            className={styles.input}
-            showSearch
-            disabled={!operation.isNotBtgClient}
-            style={{ width: '100%' }}
-            options={selectOptions.filiais}
-            optionFilterProp="children"
-            filterOption={filter}
-            filterSort={sort}
-            value={operation.filial}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'filial',
-                value
-              }))
-            }
-          />
-        </label>
-        <label className={styles.labelBox}>
-          <span className={styles.label}>Polo</span>
-          <Select
-            className={styles.input}
-            showSearch
-            style={{ width: '100%' }}
-            disabled={!operation.isNotBtgClient}
-            options={selectOptions.polos}
-            optionFilterProp="children"
-            filterOption={filter}
-            filterSort={sort}
-            value={operation.polo}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'polo',
-                value
-              }))
-            }
-          />
-        </label>
-        <label className={styles.labelBox} style={{ maxWidth: '4rem' }}>
-          <span className={styles.label}>Estado</span>
-          <Select
-            className={styles.input}
-            showSearch
-            disabled={!operation.isNotBtgClient}
-            style={{ width: '100%' }}
-            options={selectOptions.estados}
-            optionFilterProp="children"
-            filterOption={filter}
-            filterSort={sort}
-            value={operation.estado}
-            onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'estado',
-                value
-              }))
-            }
-          />
-        </label>
-      </div>
-      <h2 className={styles.subTitle}>Operação</h2>
-      <label className={styles.labelBox}>
-        <span className={styles.label}>Spread</span>
-        <Input
-          disabled
-          className={styles.input}
-          type="text"
-          value={`${Number(operation.spread).toFixed(4)} %`}
-          onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'spread',
-              value: e.target.value
-            }))
-          }
-        />
-      </label>
-      <label className={styles.labelBox}>
-        <span className={styles.label}>Volume Financeiro</span>
-        <Input
-          className={styles.input}
-          type="text"
-          disabled
-          value={`R$ ${operation.volumeFinanceiro}`}
-          onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'volumeFinanceiro',
-              value: e.target.value
-            }))
-          }
-        />
-      </label>
-      <label className={styles.labelBox}>
-        <span className={styles.label}>Receita</span>
-        <Input
-          className={styles.input}
-          type="text"
-          disabled
-          value={`R$ ${Number(operation.receita).toFixed(2)}`}
-          onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'receita',
-              value: e.target.value
-            }))
-          }
-        />
-      </label>
+      <TextArea 
+      value={operation.clientObservation}
+      onChange={(e) => dispatch(updateOperationsWindowValue({ property: 'clientObservation', value: e.target.value }))}
+      rows={6} 
+      placeholder="Observações sobre o cliente" />
     </div>
   )
 }
