@@ -3,17 +3,20 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from '../styles/table.module.sass'
 import { LeftOutlined } from '@ant-design/icons'
 import { Modal } from '../../components/CreateModal'
-import { Table } from 'antd'
+import VisitRegister  from '../../components/VisitRegister'
+import { Button, Table } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link';
 // import { GetServerSideProps } from 'next';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useSelector, useDispatch } from 'react-redux';
 import { resetOperationsWindow, updateOperationsWindowValue } from '../GlobalRedux/Features/operation/operationSlice';
+import { updateVisitWindowValue, resetVisitWindow } from '../GlobalRedux/Features/RegisterVisit/registerSlice';
 import type { RootState } from '../GlobalRedux/store';
 
 function TableScreen() {
   const operation = useSelector((state: RootState) => state.operation);
+  const visit = useSelector((state: RootState) => state.visit);
   const dispatch = useDispatch();
   const supabase = createClientComponentClient()
   const [loading, setLoading] = useState(false)
@@ -23,8 +26,9 @@ function TableScreen() {
   const itemsPerPage = 9
 
   const handleEdit = (item: any) => {
-    // dispatch(updateOperationsWindowValue({ property: 'exchangeId', value: item.id }))
-    // dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
+    console.log('item: ', item)
+    dispatch(updateOperationsWindowValue({ property: 'clientId', value: item.id }))
+    dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
 
   const handlePageChange = async (page: any) => {
@@ -93,6 +97,11 @@ function TableScreen() {
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
 
+  function registerNewVisit() {
+    dispatch(resetVisitWindow())
+    dispatch(updateVisitWindowValue({ property: 'isVisitModalOpen', value: true }))
+  }
+
   useEffect(() => {
     async function getTotalPages() {
       setLoading(true)
@@ -105,11 +114,13 @@ function TableScreen() {
       const now = new Date()
       const anoAtual = now.getFullYear()
       const mesAtual = dayjs(now).format('MM')
-      const { data } = await supabase
+      const { data: qtdClientes } = await supabase.from('Clients').select('count')
+      dispatch(updateOperationsWindowValue({ property: 'clientsQuantity', value: qtdClientes[0].count }))
+      const { data: visitorsQuantity } = await supabase
         .from('visit')
         .select('*')
-        .neq('is_deleted', true)
         .gte('visit_date', `${anoAtual}-${mesAtual}-01`) as any
+      dispatch(updateOperationsWindowValue({ property: 'visitorsQuantity', value: visitorsQuantity.length }))
     }
     getTotalPages()
     fetchData()
@@ -137,7 +148,7 @@ function TableScreen() {
             <div className={styles.cardValues}>
               <p className={styles.cardLabel}>Consultas no Mês</p>
               <p className={styles.cardValue}>
-                0
+                {operation.visitorsQuantity}
               </p>
               <div></div>
             </div>
@@ -145,7 +156,7 @@ function TableScreen() {
           <div className={styles.card}>
             <div className={styles.cardValues}>
               <p className={styles.cardLabel}>Clientes Cadastrados</p>
-              <p className={styles.cardValue}>0</p>
+              <p className={styles.cardValue}>{operation.clientsQuantity}</p>
               <div></div>
             </div>
           </div>
@@ -168,11 +179,20 @@ function TableScreen() {
           >
             Cadastrar Cliente
           </button>
+          <Button
+            onClick={registerNewVisit}
+            className={styles.button}
+            type="primary"
+            ghost
+          >
+            Registrar Consulta
+          </Button>
         </div>
       </div>
       <Modal
         isModalOpen={operation.isModalOpen}
       />
+      <VisitRegister />
     </div>
   )
 }
