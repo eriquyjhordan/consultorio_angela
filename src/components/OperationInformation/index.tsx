@@ -1,13 +1,12 @@
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import CepPromise from 'cep-promise'
 import styles from './styles.module.sass'
 import dayjs from 'dayjs'
-import { Input, Select, DatePicker } from 'antd'
-import { selectOptions } from '../../resources/data/selectOptions'
+import { Input, DatePicker } from 'antd'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useSelector, useDispatch } from 'react-redux';
-import { updateOperationsWindowValue, updateAccountDataValues } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import { updateOperationsWindowValue } from '../../app/GlobalRedux/Features/operation/operationSlice';
 import type { RootState } from '../../app/GlobalRedux/store';
 
 dayjs.extend(customParseFormat)
@@ -17,19 +16,23 @@ export function OperationInformation() {
   const operation = useSelector((state: RootState) => state.operation);
   const dispatch = useDispatch();
   const supabase = createClientComponentClient()
-  
+
   useEffect(() => {
-    async function getAddress(cep:string) {
-      if (cep.length === 8) {
-        const address = await CepPromise(cep)
-        if (address) {
-          dispatch(updateOperationsWindowValue({ property: 'street', value: address.street }))
-          dispatch(updateOperationsWindowValue({ property: 'neighborhood', value: address.neighborhood }))
-          dispatch(updateOperationsWindowValue({ property: 'city', value: address.city }))
-          dispatch(updateOperationsWindowValue({ property: 'state', value: address.state }))
+    async function getAddress(cep: string) {
+      try {
+        if (cep.length === 8) {
+          const address = await CepPromise(cep)
+          if (address) {
+            dispatch(updateOperationsWindowValue({ property: 'street', value: address.street }))
+            dispatch(updateOperationsWindowValue({ property: 'neighborhood', value: address.neighborhood }))
+            dispatch(updateOperationsWindowValue({ property: 'city', value: address.city }))
+            dispatch(updateOperationsWindowValue({ property: 'state', value: address.state }))
+          }
         }
+      } catch (error) {
+        console.log('zip code consult error: ', error)
       }
-    } 
+    }
     getAddress(operation.cep)
   }, [operation.cep])
 
@@ -41,17 +44,31 @@ export function OperationInformation() {
           placeholder="ex.: João da Silva"
           className={styles.input}
           type="text"
-          maxLength={9}
-          value={operation.account}
+          value={operation.clientName}
           onChange={(e) =>
             dispatch(updateOperationsWindowValue({
-              property: 'account',
+              property: 'clientName',
               value: e.target.value
             }))
           }
         />
       </label>
-      <h2 className={styles.subTitle}>Dados Pessoais</h2>
+      <label>
+        <span className={styles.label}>Indicado por:</span>
+        <Input
+          placeholder="ex.: João dos Santos"
+          className={styles.input}
+          type="text"
+          value={operation.indicatedBy}
+          onChange={(e) =>
+            dispatch(updateOperationsWindowValue({
+              property: 'indicatedBy',
+              value: e.target.value
+            }))
+          }
+        />
+      </label>
+
       <label>
         <div className={styles.rowEqual}>
           <label className={styles.labelBox}>
@@ -70,15 +87,15 @@ export function OperationInformation() {
             />
           </label>
           <label className={styles.labelBox}>
-            <span className={styles.label}>Número residencia</span>
+            <span className={styles.label}>Número da residencia</span>
             <Input
               placeholder="ex.: 00"
               className={styles.input}
               type="text"
-              value={operation.taxa_final}
+              value={operation.number}
               onChange={(e) =>
                 dispatch(updateOperationsWindowValue({
-                  property: 'taxa_final',
+                  property: 'number',
                   value: e.target.value
                 }))
               }
@@ -158,13 +175,13 @@ export function OperationInformation() {
             className={styles.input}
             format={dateFormatList}
             value={
-              operation.dataDeFechamento
-                ? dayjs(operation.dataDeFechamento)
+              operation.birthDate
+                ? dayjs(operation.birthDate)
                 : undefined
             }
             onChange={(value) =>
               dispatch(updateOperationsWindowValue({
-                property: 'dataDeFechamento',
+                property: 'birthDate',
                 value: dayjs(value)
               }))
             }
@@ -179,10 +196,10 @@ export function OperationInformation() {
               placeholder="ex.: (99) 99999-9999"
               className={styles.input}
               type="text"
-              value={operation.spot}
+              value={operation.primaryPhone}
               onChange={(e) =>
                 dispatch(updateOperationsWindowValue({
-                  property: 'spot',
+                  property: 'primaryPhone',
                   value: e.target.value
                 }))
               }
@@ -194,10 +211,10 @@ export function OperationInformation() {
               placeholder="ex.: (99) 99999-9999"
               className={styles.input}
               type="text"
-              value={operation.taxa_final}
+              value={operation.secondaryPhone}
               onChange={(e) =>
                 dispatch(updateOperationsWindowValue({
-                  property: 'taxa_final',
+                  property: 'secondaryPhone',
                   value: e.target.value
                 }))
               }
@@ -205,22 +222,38 @@ export function OperationInformation() {
           </label>
         </div>
       </label>
-      <label>
-        <span className={styles.label}>Email</span>
-        <Input
-          placeholder="ex.: joaodasilva@email.com"
-          className={styles.input}
-          type="email"
-          maxLength={9}
-          value={operation.account}
-          onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'account',
-              value: e.target.value
-            }))
-          }
-        />
-      </label>
+      <div className={styles.rowEqual}>
+        <label>
+          <span className={styles.label}>Email</span>
+          <Input
+            placeholder="ex.: joaodasilva@email.com"
+            className={styles.input}
+            type="email"
+            value={operation.email}
+            onChange={(e) =>
+              dispatch(updateOperationsWindowValue({
+                property: 'email',
+                value: e.target.value
+              }))
+            }
+          />
+        </label>
+        <label>
+          <span className={styles.label}>Profissão</span>
+          <Input
+            placeholder="ex.: Médico"
+            className={styles.input}
+            type="text"
+            value={operation.occupation}
+            onChange={(e) =>
+              dispatch(updateOperationsWindowValue({
+                property: 'occupation',
+                value: e.target.value
+              }))
+            }
+          />
+        </label>
+      </div>
     </div>
   )
 }
