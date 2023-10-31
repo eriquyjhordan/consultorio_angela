@@ -3,77 +3,77 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface OperationsStore {
+    clientName: string;
     cep: string;
     street: string;
     neighborhood: string;
     city: string;
     state: string;
-    account: string;
-    banco: string;
-    tipo: string;
-    operacao: string;
-    natureza: string;
-    moeda: string;
-    spot: string;
-    taxa_final: string;
-    volume: string;
-    despesas: string;
-    dataDeFechamento: Date | undefined;
-    dataDeLiquidacao: Date | undefined;
-    nomeCliente: string;
-    tipoDePessoa: string;
-    documentoDoCliente: string;
-    banker: string;
-    originador: string;
-    franquia: string;
-    filial: string;
-    polo: string;
-    estado: string;
-    spread: string;
-    volumeFinanceiro: string;
-    receita: string;
-    isNotBtgClient: boolean;
+    clientsQuantity: string;
+    visitorsQuantity: string;
+    number: string;
+    birthDate: Date;
+    primaryPhone: string;
+    secondaryPhone: string;
+    email: string;
+    vacinas: boolean;
+    alergias: boolean;
+    cirurgias: boolean;
+    hepatite: boolean;
+    diabetes: boolean;
+    hipertencao: boolean;
+    doencasVasculares: boolean;
+    diseaseObservation: string;
+    pePlano: boolean;
+    peValgo: boolean;
+    peCavo: boolean;
+    peEsquino: boolean;
+    peVaro: boolean;
+    halluxValgus: boolean;
+    clientObservation: string;
     fetchData: boolean;
     isModalOpen: boolean;
     isSuccessScreenOpen: boolean;
-    exchangeId?: string;
+    clientId: string;
+    occupation: string;
+    indicatedBy: string;
 }
 
 const initialState: OperationsStore = {
+    clientName: '',
+    clientsQuantity: '',
+    visitorsQuantity: '',
     cep: '',
     street: '',
     neighborhood: '',
     city: '',
     state: '',
-    account: '',
-    banco: '',
-    tipo: '',
-    operacao: '',
-    natureza: '',
-    moeda: '',
-    volume: '',
-    spot: '',
-    taxa_final: '',
-    despesas: '',
-    dataDeFechamento: undefined,
-    dataDeLiquidacao: undefined,
-    nomeCliente: '',
-    tipoDePessoa: '',
-    documentoDoCliente: '',
-    banker: '',
-    originador: '',
-    franquia: '',
-    filial: '',
-    polo: '',
-    estado: '',
-    spread: '',
-    volumeFinanceiro: '',
-    receita: '',
+    number: '',
+    birthDate: undefined,
+    primaryPhone: '',
+    secondaryPhone: '',
+    email: '',
+    vacinas: false,
+    alergias: false,
+    cirurgias: false,
+    hepatite: false,
+    diabetes: false,
+    hipertencao: false,
+    doencasVasculares: false,
+    diseaseObservation: '',
+    pePlano: false,
+    peValgo: false,
+    peCavo: false,
+    peEsquino: false,
+    peVaro: false,
+    halluxValgus: false,
+    clientObservation: '',
     fetchData: false,
-    isNotBtgClient: false,
     isModalOpen: false,
     isSuccessScreenOpen: false,
-    exchangeId: undefined,
+    clientId: '',
+    occupation: '',
+    indicatedBy: '',
 };
 const operationsSlice = createSlice({
     name: 'operations',
@@ -86,38 +86,39 @@ const operationsSlice = createSlice({
             const { property, value } = action.payload;
             state[property] = value;
         },
-        updataValuesToEdit: (state: OperationsStore, action: PayloadAction<any>) => {
+        updateValuesToEdit: (state: OperationsStore, action: PayloadAction<any>) => {
             const exchangeControlData = action.payload;
-            state.cep = exchangeControlData.cep;
-            state.street = exchangeControlData.street;
+            console.log(exchangeControlData);
+            state.clientName = exchangeControlData.name;
+            state.cep = exchangeControlData.zipcode;
+            state.street = exchangeControlData.address;
             state.neighborhood = exchangeControlData.neighborhood;
             state.city = exchangeControlData.city;
-            state.state = exchangeControlData.state_id;
-            state.account = exchangeControlData.account_number;
-            state.banker = exchangeControlData.banker_id;
-            state.documentoDoCliente = exchangeControlData.investor_document;
-            state.nomeCliente = exchangeControlData.investor_full_name;
-            state.tipoDePessoa = exchangeControlData.investor_type;
-            state.filial = exchangeControlData.office_id;
-            state.banco = exchangeControlData.operation_bank;
-            state.operacao = exchangeControlData.operation_category;
-            state.moeda = exchangeControlData.operation_currency;
-            state.dataDeFechamento = exchangeControlData.operation_date;
-            state.despesas = exchangeControlData.operation_expenses;
-            state.taxa_final = exchangeControlData.operation_final_rate;
-            state.volumeFinanceiro = exchangeControlData.operation_financial_volume;
-            state.dataDeLiquidacao = exchangeControlData.operation_liquidity_date;
-            state.natureza = exchangeControlData.operation_nature;
-            state.receita = exchangeControlData.operation_revenue;
-            state.spot = exchangeControlData.operation_spot;
-            state.spread = exchangeControlData.operation_spread;
-            state.tipo = exchangeControlData.operation_type;
-            state.volume = exchangeControlData.operation_volume;
-            state.franquia = exchangeControlData.segment_id;
-            state.originador = exchangeControlData.originator_id;
-          },
-        updateAccountDataValues: (state: OperationsStore, action: PayloadAction<any>) => {
-            const accountData = action.payload;
+            state.state = exchangeControlData.state;
+            state.clientsQuantity = exchangeControlData.clientsQuantity;
+            state.number = exchangeControlData.number;
+            state.birthDate = exchangeControlData.birthDate;
+            state.primaryPhone = exchangeControlData.primary_phone;
+            state.secondaryPhone = exchangeControlData.secondary_phone;
+            state.email = exchangeControlData.email;
+            state.vacinas = exchangeControlData.vacina_tetano;
+            state.alergias = exchangeControlData.alergias;
+            state.cirurgias = exchangeControlData.cirurgias;
+            state.hepatite = exchangeControlData.hepatite;
+            state.diabetes = exchangeControlData.diabetes;
+            state.hipertencao = exchangeControlData.hipertencao;
+            state.doencasVasculares = exchangeControlData.doencasVasculares;
+            state.diseaseObservation = exchangeControlData.diseaseObservation;
+            state.pePlano = exchangeControlData.pePlano;
+            state.peValgo = exchangeControlData.peValgo;
+            state.peCavo = exchangeControlData.peCavo;
+            state.peEsquino = exchangeControlData.peEsquino;
+            state.peVaro = exchangeControlData.peVaro;
+            state.halluxValgus = exchangeControlData.halluxValgus;
+            state.clientObservation = exchangeControlData.clientObservation;
+            state.fetchData = exchangeControlData.fetchData;
+            state.occupation = exchangeControlData.occupation;
+            state.indicatedBy = exchangeControlData.indicated_by;
         },
         resetOperationsWindow: (state) => {
             return initialState;
@@ -125,6 +126,6 @@ const operationsSlice = createSlice({
     },
 });
 
-export const { resetOperationsWindow, updateOperationsWindowValue, updataValuesToEdit, updateAccountDataValues } = operationsSlice.actions;
+export const { resetOperationsWindow, updateOperationsWindowValue, updateValuesToEdit: updateValuesToEdit, } = operationsSlice.actions;
 
 export default operationsSlice.reducer;
