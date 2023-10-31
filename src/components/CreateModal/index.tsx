@@ -14,7 +14,7 @@ import { SuccessMessage } from '../ConfimationScreen'
 import dayjs from 'dayjs'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useSelector, useDispatch } from 'react-redux';
-import { updateOperationsWindowValue, resetOperationsWindow, updataValuesToEdit } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import { updateOperationsWindowValue, resetOperationsWindow, updateValuesToEdit } from '../../app/GlobalRedux/Features/operation/operationSlice';
 import type { RootState } from '../../app/GlobalRedux/store';
 
 
@@ -36,116 +36,191 @@ export function Modal({ isModalOpen }: ModalProps) {
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: false }))
   }
 
-  useEffect(() => {
-    async function fetchExchangeControl() {
-      try {
-        const { data } = await supabase.from('exchange_control').select('*').eq('exchange_control_id', operation.exchangeId)
-        if (data) {
-          dispatch(updataValuesToEdit(data[0]))
-        } else {
-          throw new Error('Não foi possível encontrar a operação')
-        }
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-    async function getUserEmail() {
-      try {
-        const userdata = await supabase.auth.getUser() as any
-        const userEmail = userdata.data.user.email
-        setuserEmail(userEmail)
-        
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-    if (operation.exchangeId) {
-      fetchExchangeControl()
-    }
-    getUserEmail()
-  }, [operation.exchangeId])
-
-  function handleCancel() {
-    dispatch(resetOperationsWindow())
-    dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+  const handleCancel = () => {
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: false }))
-    dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: false }))
+    dispatch(resetOperationsWindow())
+  }
+
+  async function firstTable() {
+    const {
+      clientName,
+      cep,
+      street,
+      neighborhood,
+      city,
+      state,
+      birthDate,
+      primaryPhone,
+      secondaryPhone,
+      email,
+      number,
+      occupation,
+      indicatedBy,
+    } = operation
+    const { data, error }: any = await supabase.from('Clients').insert([
+      {
+        name: clientName,
+        birthdate: birthDate,
+        occupation: occupation,
+        address: street,
+        neighborhood,
+        city,
+        zipcode: cep,
+        state,
+        primary_phone: primaryPhone,
+        secondary_phone: secondaryPhone,
+        email,
+        indicated_by: indicatedBy,
+        number
+      },
+    ])
+    return data
   }
 
   async function handleSave() {
-    try {
-      const response = await supabase.from('exchange_control').upsert({
-        account_number: operation.account,
-        banker_id: operation.banker,
-        exchange_control_id: operation.exchangeId
-          ? operation.exchangeId
-          : `exchange_control_${uuid()}`,
-        investor_document: operation.documentoDoCliente,
-        investor_full_name: operation.nomeCliente,
-        investor_type: operation.tipoDePessoa,
-        office_id: operation.filial,
-        operation_bank: operation.banco,
-        operation_category: operation.operacao,
-        operation_currency: operation.moeda,
-        operation_date: dayjs(operation.dataDeFechamento).format(
-          'YYYY-MM-DD'
-        ),
-        operation_expenses: operation.despesas,
-        operation_final_rate: operation.taxa_final,
-        operation_financial_volume: operation.volumeFinanceiro,
-        operation_liquidity_date: dayjs(operation.dataDeLiquidacao).format(
-          'YYYY-MM-DD'
-        ),
-        operation_nature: operation.natureza,
-        operation_revenue: operation.receita,
-        operation_spot: operation.spot,
-        operation_spread: operation.spread,
-        operation_type: operation.tipo,
-        operation_volume: operation.volume,
-        originator_id: operation.originador,
-        segment_id: operation.franquia,
-        operator: userEmail,
-      }).select()
-      operation.exchangeId
-        ? setOperationType('Edição')
-        : setOperationType('Cadastro')
-      setStatus('success')
-      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
-      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
-    } catch (error) {
-      console.log('error', error)
-      operation.exchangeId
-        ? setOperationType('Edição')
-        : setOperationType('Cadastro')
-      setStatus('error')
-      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
-      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
-    }
-  }
-  
-  async function handleDelete() {
-    try {
-      const { data, error } = await supabase
-        .from('exchange_control')
-        .update({ is_deleted: true, updated_at: new Date(), operator: userEmail })
-        .eq('exchange_control_id', operation.exchangeId)
-        .select()
-      console.log('handle delete: ', data)
+    const {
+      clientName,
+      cep,
+      street,
+      neighborhood,
+      city,
+      state,
+      birthDate,
+      primaryPhone,
+      secondaryPhone,
+      email,
+      number,
+      occupation,
+      indicatedBy,
+      vacinas,
+      alergias,
+      cirurgias,
+      hepatite,
+      diabetes,
+      hipertencao,
+      doencasVasculares,
+      diseaseObservation,
+      pePlano,
+      peCavo,
+      peEsquino,
+      peValgo,
+      peVaro,
+      halluxValgus,
+      clientObservation,
+    } = operation
+    if (operation.clientId) {
+      const { data, error }: any = await supabase.from('Clients').update({
+        name: clientName,
+        birthdate: birthDate,
+        occupation: occupation,
+        address: street,
+        neighborhood,
+        city,
+        zipcode: cep,
+        state,
+        primary_phone: primaryPhone,
+        secondary_phone: secondaryPhone,
+        email,
+        indicated_by: indicatedBy,
+        number,
+        vacina_tetano: vacinas,
+        alergias,
+        cirurgias,
+        hepatite,
+        diabetes,
+        hipertencao,
+        doencasVasculares,
+        diseaseObservation,
+        pePlano,
+        peCavo,
+        peEsquino,
+        peValgo,
+        peVaro,
+        halluxValgus,
+        clientObservation,
+      }).eq('id', operation.clientId)
       if (error) {
-        throw new Error('Não foi possível excluir a operação')
+        console.log('error: ', error)
+        setStatus('error')
+        dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+        dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
+        return
       }
-      setOperationType('Exclusão')
-      setStatus('success')
-      dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
-      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
-    } catch (error) {
-      console.log('error', error)
-      setOperationType('Exclusão')
+    } else {
+    const { data, error }: any = await supabase.from('Clients').insert([
+      {
+        name: clientName,
+        birthdate: birthDate,
+        occupation: occupation,
+        address: street,
+        neighborhood,
+        city,
+        zipcode: cep,
+        state,
+        primary_phone: primaryPhone,
+        secondary_phone: secondaryPhone,
+        email,
+        indicated_by: indicatedBy,
+        number,
+        vacina_tetano: vacinas,
+        alergias,
+        cirurgias,
+        hepatite,
+        diabetes,
+        hipertencao,
+        doencasVasculares,
+        diseaseObservation,
+        pePlano,
+        peCavo,
+        peEsquino,
+        peValgo,
+        peVaro,
+        halluxValgus,
+        clientObservation,
+      },
+    ])
+    if (error) {
+      console.log('error: ', error)
       setStatus('error')
-      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
       dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+      dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
+      return
+    }
+   }
+    setStatus('success')
+    dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
+    dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+  }
+  async function handleDelete() {
+    if (operation.clientId) {
+      const { data, error }: any = await supabase.from('Clients').delete().eq('id', operation.clientId)
+      if (data) {
+        setStatus('success')
+        dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
+        dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+      } else if (error) {
+        setStatus('error')
+        dispatch(updateOperationsWindowValue({ property: 'isSuccessScreenOpen', value: true }))
+        dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+      }
     }
   }
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data: clients, error } = await supabase
+        .from('Clients')
+        .select('*')
+        .eq('id', operation.clientId)
+      if (clients) {
+        dispatch(updateValuesToEdit(clients[0]))
+      }
+    }
+
+    fetchData()
+
+  }, [operation.isModalOpen, operation.clientId])
+
 
   return (
     <>
@@ -172,9 +247,9 @@ export function Modal({ isModalOpen }: ModalProps) {
                 <ClientInfos />
               </div>
               <footer className={styles.footer}>
-                <div className={styles.buttons}>
+                <div className={styles.buttons} >
                   <Button onClick={handleCancel}>Cancelar</Button>
-                  {operation.exchangeId && (
+                  {operation.clientId && (
                     <ConfigProvider
                       theme={{
                         token: {
@@ -182,16 +257,7 @@ export function Modal({ isModalOpen }: ModalProps) {
                         },
                       }}
                     >
-                      <Popconfirm
-                        title="Deletar operação"
-                        description="Você tem certeza que deseja deletar?"
-                        onConfirm={() => handleDelete()}
-                        onCancel={() => console.log('cancel')}
-                        okText="Sim"
-                        cancelText="Não"
-                      >
-                        <Button type="primary">Excluir</Button>
-                      </Popconfirm>
+                      <Button type="primary" onClick={() => handleDelete()}>Excluir</Button>
                     </ConfigProvider>
                   )}
                   <Button onClick={() => dispatch(resetOperationsWindow())}>
@@ -202,7 +268,7 @@ export function Modal({ isModalOpen }: ModalProps) {
                     type="primary"
                     className={styles.confirmationBtn}
                   >
-                    {operation.exchangeId ? 'Salvar' : 'Cadastrar'}
+                    {operation.clientId ? 'Salvar' : 'Cadastrar'}
                   </Button>
                 </div>
                 <div></div>
