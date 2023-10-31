@@ -6,58 +6,52 @@
 .wrapper
   display: flex
   flex-direction: row
-  
 
 .leftBox
-  width: 70%
+  width: 60%
   height: 100vh
-  background-color: #131718
+  background: linear-gradient(44deg, #7B067A 1.28%, rgba(116, 65, 115, 0.62) 152.35%, rgba(143, 4, 142, 0.00) 152.37%)
   display: flex
-  flex-direction: column
-  justify-content: space-between
+  align-items: center
+  justify-content: center
 
 .rightBox
-  background-color: #F2F2F2
-  width: 30%
+  background-color: #fff
+  width: 40%
   height: 100vh
   display: flex
   flex-direction: column
-  justify-content: space-between
   align-items: center
+  justify-content: center
+  gap: 1.5rem
 
-.footer
-  color: #F2F2F2
-  margin-bottom: 2.5rem
+.logoPes
+  margin-top: 2rem
+
+.inputs
+  margin-top: 2rem
   display: flex
-  justify-content: space-between
-  padding-inline: 2rem
-
-.image
-  margin: 0 auto
-
-.apxLogo
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 1rem
   width: 100%
 
-.rightTitle
-  margin-top: 5rem
-  color: #131718
-  font-size: 2rem
-  font-family: Manrope
-  font-style: normal
-  font-weight: 700
+.input
+  display: flex
+  width: 20rem !important
 
 .button
   color: #FFF
-  font-size: 1.375rem
-  font-family: Manrope
-  font-style: normal
+  font-size: 18px
   font-weight: 700
-  line-height: normal
-  border-radius: 1rem
-  background: #0A489B
-  padding: 1rem 7rem
-  width: 17.6rem
+  border-radius: 0.5rem
+  background: #975F97
+  width: 20rem
+  padding-block: 13px 
   cursor: pointer
   transition: all 0.2s ease-in-out
+  &:disabled:hover
+    cursor: not-allowed
   &:hover
-    background: #073066
+    background: #883187

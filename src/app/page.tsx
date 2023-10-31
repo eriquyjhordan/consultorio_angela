@@ -1,84 +1,106 @@
-'use client'
-import Image from 'next/image'
-import { useState } from 'react';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Input, Spin } from 'antd';
-import styles from './styles/home.module.sass'
-import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Input, Spin } from "antd";
+import styles from "./styles/home.module.sass";
+import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+import {
+  UserOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+} from "@ant-design/icons";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const supabase = createClientComponentClient()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const supabase = createClientComponentClient();
   const router = useRouter();
 
+  const disabled = (!email || password.length < 8) || isLoading;
+
   async function handleLogin(e: any) {
-    e.preventDefault()
+    e.preventDefault();
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
-      password
-    })
+      password,
+    });
     if (error) {
-      alert(error.message)
+      alert(error.message);
       setIsLoading(false);
     }
-    router.push('/table');
+    router.push("/table");
   }
 
   return (
     <>
       <div className={styles.wrapper}>
         <div className={styles.leftBox}>
-          <h1 className={styles.title}>Controle de Clientes</h1>
           <div className={styles.image}>
             <Image
-              src="/images/logo_angela.png"
-              alt="Logo APX azul PNG"
-              className={styles.apxLogo}
-              width={500}
-              height={350}
+              src="/images/logo_angela_texto.svg"
+              alt="Logo Angela"
+              width={519}
+              height={520}
             />
-          </div>
-          <div className={styles.footer}>
-            <p className={styles.version}>v1.0.0</p>
-            <p className={styles.userName}></p>
           </div>
         </div>
         <form className={styles.rightBox}>
-          <h2 className={styles.rightTitle}>Login</h2>
-          <label className={styles.labelBox}>
-            <span className={styles.label}>Email</span>
-            <Input
-              className={styles.input}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
-          <label className={styles.labelBox}>
-            <span className={styles.label}>Senha</span>
-            <Input
-              className={styles.input}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} 
-            />
-          </label>
-          <button onClick={handleLogin} className={styles.button} type="submit">
-            {
-              isLoading ? (
-                <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#fff' }} spin />} />
-              ) : (
-                "Entrar"
-              )
-            }
+          <h2 className={styles.rightTitle}>Bem-vinda!</h2>
+          <p className={styles.rightText}>Entre com suas credenciais abaixo</p>
+          <Image
+            src="/images/logo_angela_pes.svg"
+            alt="Logo Angela pés"
+            className={styles.logoPes}
+            width={214}
+            height={128}
+          />
+          <div className={styles.inputs}>
+            <label className={styles.labelBox}>
+              <span className={styles.label}>Email</span>
+              <Input
+                placeholder="exemplo@exemplo.com"
+                type="email"
+                value={email}
+                className={styles.input}
+                onChange={(e) => setEmail(e.target.value)}
+                prefix={<UserOutlined />}
+              />
+            </label>
+            <label className={styles.labelBox}>
+              <span className={styles.label}>Senha</span>
+              <Input.Password
+                className={styles.input}
+                placeholder="Insira sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
+            </label>
+          </div>
+          <button onClick={handleLogin} disabled={disabled} className={styles.button} type="submit">
+            {isLoading ? (
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    style={{ fontSize: 24, color: "#fff" }}
+                    spin
+                  />
+                }
+              />
+            ) : (
+              "Entrar"
+            )}
           </button>
           <div></div>
         </form>
       </div>
     </>
-  )
+  );
 }
