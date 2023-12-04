@@ -5,11 +5,23 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface VisitStore {
     isVisitModalOpen: boolean;
     isSuccessScreenOpen: boolean;
+    oniciolise: boolean;
+    onicomicose: boolean;
+    onicogrifose: boolean;
+    outros: string;
+    desconforto: boolean;
+    desconfortoText: string;
 }
 
 const initialState: VisitStore = {
     isVisitModalOpen: false,
     isSuccessScreenOpen: false,
+    oniciolise: false,
+    onicomicose: false,
+    onicogrifose: false,
+    outros: '',
+    desconforto: false,
+    desconfortoText: '',
 };
 const visitSlice = createSlice({
     name: 'Visit',
