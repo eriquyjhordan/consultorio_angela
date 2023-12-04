@@ -30,10 +30,11 @@ export default function Home() {
       password,
     });
     if (error) {
-      alert(error.message);
+      alert('Email ou senha incorretos');
       setIsLoading(false);
+    } else {
+      router.push("/table");
     }
-    router.push("/table");
   }
 
   return (
