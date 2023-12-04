@@ -1,40 +1,60 @@
-import { useEffect } from 'react'
-import CepPromise from 'cep-promise'
-import styles from './styles.module.sass'
-import dayjs from 'dayjs'
-import { Input, DatePicker } from 'antd'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useSelector, useDispatch } from 'react-redux';
-import { updateOperationsWindowValue } from '../../app/GlobalRedux/Features/operation/operationSlice';
-import type { RootState } from '../../app/GlobalRedux/store';
+import { useEffect } from "react";
+import CepPromise from "cep-promise";
+import styles from "./styles.module.sass";
+import dayjs from "dayjs";
+import { Input, DatePicker } from "antd";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useSelector, useDispatch } from "react-redux";
+import { updateOperationsWindowValue } from "../../app/GlobalRedux/Features/operation/operationSlice";
+import type { RootState } from "../../app/GlobalRedux/store";
 
-dayjs.extend(customParseFormat)
-const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY']
+dayjs.extend(customParseFormat);
+const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
 
 export function OperationInformation() {
   const operation = useSelector((state: RootState) => state.operation);
   const dispatch = useDispatch();
-  const supabase = createClientComponentClient()
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     async function getAddress(cep: string) {
       try {
         if (cep.length === 8) {
-          const address = await CepPromise(cep)
+          const address = await CepPromise(cep);
           if (address) {
-            dispatch(updateOperationsWindowValue({ property: 'street', value: address.street }))
-            dispatch(updateOperationsWindowValue({ property: 'neighborhood', value: address.neighborhood }))
-            dispatch(updateOperationsWindowValue({ property: 'city', value: address.city }))
-            dispatch(updateOperationsWindowValue({ property: 'state', value: address.state }))
+            dispatch(
+              updateOperationsWindowValue({
+                property: "street",
+                value: address.street,
+              })
+            );
+            dispatch(
+              updateOperationsWindowValue({
+                property: "neighborhood",
+                value: address.neighborhood,
+              })
+            );
+            dispatch(
+              updateOperationsWindowValue({
+                property: "city",
+                value: address.city,
+              })
+            );
+            dispatch(
+              updateOperationsWindowValue({
+                property: "state",
+                value: address.state,
+              })
+            );
           }
         }
       } catch (error) {
-        console.log('zip code consult error: ', error)
+        console.log("zip code consult error: ", error);
       }
     }
-    getAddress(operation.cep)
-  }, [operation.cep])
+    getAddress(operation.cep);
+  }, [operation.cep]);
 
   return (
     <div className={styles.inputs}>
@@ -46,28 +66,51 @@ export function OperationInformation() {
           type="text"
           value={operation.clientName}
           onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'clientName',
-              value: e.target.value
-            }))
+            dispatch(
+              updateOperationsWindowValue({
+                property: "clientName",
+                value: e.target.value,
+              })
+            )
           }
         />
       </label>
-      <label>
-        <span className={styles.label}>Indicado por:</span>
-        <Input
-          placeholder="ex.: João dos Santos"
-          className={styles.input}
-          type="text"
-          value={operation.indicatedBy}
-          onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'indicatedBy',
-              value: e.target.value
-            }))
-          }
-        />
-      </label>
+      <div className={styles.rowEqual}>
+        <label>
+          <span className={styles.label}>CPF:</span>
+          <Input
+            placeholder="ex.: 000.000.000-00"
+            className={styles.input}
+            type="text"
+            value={operation.cpf}
+            onChange={(e) =>
+              dispatch(
+                updateOperationsWindowValue({
+                  property: "cpf",
+                  value: e.target.value,
+                })
+              )
+            }
+          />
+        </label>
+        <label>
+          <span className={styles.label}>Indicado por:</span>
+          <Input
+            placeholder="ex.: João dos Santos"
+            className={styles.input}
+            type="text"
+            value={operation.indicatedBy}
+            onChange={(e) =>
+              dispatch(
+                updateOperationsWindowValue({
+                  property: "indicatedBy",
+                  value: e.target.value,
+                })
+              )
+            }
+          />
+        </label>
+      </div>
 
       <label>
         <div className={styles.rowEqual}>
@@ -79,10 +122,12 @@ export function OperationInformation() {
               type="text"
               value={operation.cep}
               onChange={(e) =>
-                dispatch(updateOperationsWindowValue({
-                  property: 'cep',
-                  value: e.target.value
-                }))
+                dispatch(
+                  updateOperationsWindowValue({
+                    property: "cep",
+                    value: e.target.value,
+                  })
+                )
               }
             />
           </label>
@@ -94,10 +139,12 @@ export function OperationInformation() {
               type="text"
               value={operation.number}
               onChange={(e) =>
-                dispatch(updateOperationsWindowValue({
-                  property: 'number',
-                  value: e.target.value
-                }))
+                dispatch(
+                  updateOperationsWindowValue({
+                    property: "number",
+                    value: e.target.value,
+                  })
+                )
               }
             />
           </label>
@@ -111,10 +158,12 @@ export function OperationInformation() {
           type="text"
           value={operation.street}
           onChange={(e) =>
-            dispatch(updateOperationsWindowValue({
-              property: 'street',
-              value: e.target.value
-            }))
+            dispatch(
+              updateOperationsWindowValue({
+                property: "street",
+                value: e.target.value,
+              })
+            )
           }
         />
       </label>
@@ -128,10 +177,12 @@ export function OperationInformation() {
               type="text"
               value={operation.neighborhood}
               onChange={(e) =>
-                dispatch(updateOperationsWindowValue({
-                  property: 'neighborhood',
-                  value: e.target.value
-                }))
+                dispatch(
+                  updateOperationsWindowValue({
+                    property: "neighborhood",
+                    value: e.target.value,
+                  })
+                )
               }
             />
           </label>
@@ -143,10 +194,12 @@ export function OperationInformation() {
               type="text"
               value={operation.city}
               onChange={(e) =>
-                dispatch(updateOperationsWindowValue({
-                  property: 'city',
-                  value: e.target.value
-                }))
+                dispatch(
+                  updateOperationsWindowValue({
+                    property: "city",
+                    value: e.target.value,
+                  })
+                )
               }
             />
           </label>
@@ -161,10 +214,12 @@ export function OperationInformation() {
             type="text"
             value={operation.state}
             onChange={(e) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'state',
-                value: e.target.value
-              }))
+              dispatch(
+                updateOperationsWindowValue({
+                  property: "state",
+                  value: e.target.value,
+                })
+              )
             }
           />
         </label>
@@ -174,16 +229,14 @@ export function OperationInformation() {
             placeholder="Selecione a data"
             className={styles.input}
             format={dateFormatList}
-            value={
-              operation.birthDate
-                ? dayjs(operation.birthDate)
-                : undefined
-            }
+            value={operation.birthDate ? dayjs(operation.birthDate) : undefined}
             onChange={(value) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'birthDate',
-                value: dayjs(value)
-              }))
+              dispatch(
+                updateOperationsWindowValue({
+                  property: "birthDate",
+                  value: dayjs(value),
+                })
+              )
             }
           />
         </label>
@@ -198,10 +251,12 @@ export function OperationInformation() {
               type="text"
               value={operation.primaryPhone}
               onChange={(e) =>
-                dispatch(updateOperationsWindowValue({
-                  property: 'primaryPhone',
-                  value: e.target.value
-                }))
+                dispatch(
+                  updateOperationsWindowValue({
+                    property: "primaryPhone",
+                    value: e.target.value,
+                  })
+                )
               }
             />
           </label>
@@ -213,10 +268,12 @@ export function OperationInformation() {
               type="text"
               value={operation.secondaryPhone}
               onChange={(e) =>
-                dispatch(updateOperationsWindowValue({
-                  property: 'secondaryPhone',
-                  value: e.target.value
-                }))
+                dispatch(
+                  updateOperationsWindowValue({
+                    property: "secondaryPhone",
+                    value: e.target.value,
+                  })
+                )
               }
             />
           </label>
@@ -231,10 +288,12 @@ export function OperationInformation() {
             type="email"
             value={operation.email}
             onChange={(e) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'email',
-                value: e.target.value
-              }))
+              dispatch(
+                updateOperationsWindowValue({
+                  property: "email",
+                  value: e.target.value,
+                })
+              )
             }
           />
         </label>
@@ -246,14 +305,16 @@ export function OperationInformation() {
             type="text"
             value={operation.occupation}
             onChange={(e) =>
-              dispatch(updateOperationsWindowValue({
-                property: 'occupation',
-                value: e.target.value
-              }))
+              dispatch(
+                updateOperationsWindowValue({
+                  property: "occupation",
+                  value: e.target.value,
+                })
+              )
             }
           />
         </label>
       </div>
     </div>
-  )
+  );
 }
