@@ -10,6 +10,8 @@ import type { RootState } from "../../app/GlobalRedux/store";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from 'react'
 import { SuccessMessage } from '../ConfimationScreen'
+import VisitDetails from "../VisitDetails";
+import VisitFile from "../visitFile";
 
 export default function VisitRegister() {
   const visit = useSelector((state: RootState) => state.visit);
@@ -54,13 +56,14 @@ export default function VisitRegister() {
               <div className={styles.header}>
                 <h1 className={styles.title}>Registrar nova consulta</h1>
               </div>
-              {/* <div className={styles.infos}>
-                <visitInformation />
+              <div className={styles.infos}>
+                <div>
+                  <VisitDetails />
+                </div>
                 <div className={styles.divider}></div>
-                <ClientInfos />
-              </div> */}
-              <div>
-                <h1>content</h1>
+                <div>
+                  <VisitFile />
+                </div>
               </div>
               <footer className={styles.footer}>
                 <div className={styles.buttons}>
