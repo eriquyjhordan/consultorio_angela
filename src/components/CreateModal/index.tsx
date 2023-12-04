@@ -92,6 +92,7 @@ export function Modal({ isModalOpen }: ModalProps) {
       number,
       occupation,
       indicatedBy,
+      cpf,
       vacinas,
       alergias,
       cirurgias,
@@ -138,6 +139,7 @@ export function Modal({ isModalOpen }: ModalProps) {
         peVaro,
         halluxValgus,
         clientObservation,
+        cpf
       }).eq('id', operation.clientId)
       if (error) {
         console.log('error: ', error)
@@ -161,6 +163,7 @@ export function Modal({ isModalOpen }: ModalProps) {
         secondary_phone: secondaryPhone,
         email,
         indicated_by: indicatedBy,
+        cpf,
         number,
         vacina_tetano: vacinas,
         alergias,

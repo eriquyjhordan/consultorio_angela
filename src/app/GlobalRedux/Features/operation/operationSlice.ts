@@ -37,10 +37,12 @@ interface OperationsStore {
     clientId: string;
     occupation: string;
     indicatedBy: string;
+    cpf: string;
 }
 
 const initialState: OperationsStore = {
     clientName: '',
+    cpf: '',
     clientsQuantity: '',
     visitorsQuantity: '',
     cep: '',
