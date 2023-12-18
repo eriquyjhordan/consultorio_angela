@@ -90,7 +90,6 @@ const operationsSlice = createSlice({
         },
         updateValuesToEdit: (state: OperationsStore, action: PayloadAction<any>) => {
             const exchangeControlData = action.payload;
-            console.log(exchangeControlData);
             state.clientName = exchangeControlData.name;
             state.cep = exchangeControlData.zipcode;
             state.street = exchangeControlData.address;

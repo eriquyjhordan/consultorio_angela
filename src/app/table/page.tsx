@@ -26,7 +26,6 @@ function TableScreen() {
   const itemsPerPage = 9
 
   const handleEdit = (item: any) => {
-    console.log('item: ', item)
     dispatch(updateOperationsWindowValue({ property: 'clientId', value: item.id }))
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
@@ -106,7 +105,6 @@ function TableScreen() {
     async function getTotalPages() {
       setLoading(true)
       const { data: exchange_control, error } = await supabase.from('Clients').select('count')
-      console.log('quantidade de registros: ', exchange_control)
       if (exchange_control)
         setTotalPages(exchange_control[0].count)
     }
