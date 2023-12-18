@@ -1,6 +1,6 @@
 import styles from "./styles.module.sass";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Select, DatePicker, Space } from "antd";
+import { Select, DatePicker } from "antd";
 import locale from "antd/es/date-picker/locale/pt_BR";
 import type { DatePickerProps, RangePickerProps } from "antd/es/date-picker";
 import { Input, Switch } from "antd";
@@ -15,10 +15,8 @@ export default function VisitDetails() {
   const visit = useSelector((state: RootState) => state.visit);
   const dispatch = useDispatch();
   const [clients, setClients] = useState<{ label; value }[]>([]);
-  const [selectedClient, setSelectedClient] = useState<{ label; value }>(
-    {} as any
-  );
   const supabase = createClientComponentClient();
+
 
   const filter = (input: any, option: any) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
@@ -32,14 +30,13 @@ export default function VisitDetails() {
     value: DatePickerProps["value"] | RangePickerProps["value"],
     dateString: [string, string] | string
   ) => {
-    console.log("Selected Time: ", value);
-    console.log("Formatted Selected Time: ", dateString);
+    dispatch(updateVisitWindowValue({ property: "date", value: dateString }));
   };
 
   const onOk = (
     value: DatePickerProps["value"] | RangePickerProps["value"]
   ) => {
-    console.log("onOk: ", value);
+    // console.log("onOk: ", value)
   };
 
   useEffect(() => {
@@ -50,7 +47,6 @@ export default function VisitDetails() {
           label: client.name,
           value: client.id,
         }));
-        console.log("clients data", clientsData);
         setClients(clientsData);
       }
     }
@@ -64,12 +60,12 @@ export default function VisitDetails() {
         showSearch
         placeholder="Pesquise o nome do cliente"
         options={clients}
-        value={selectedClient.label}
+        value={visit.selectedClient}
         optionFilterProp="children"
         filterOption={filter}
         filterSort={sort}
         className={styles.input}
-        onChange={(label, value) => setSelectedClient({ label, value })}
+        onChange={(label, value) => dispatch(updateVisitWindowValue({ property: "selectedClient", value: { ...label, ...value } }))}
       />
       <DatePicker
         showTime={{ format: "HH:mm" }}
@@ -152,7 +148,7 @@ export default function VisitDetails() {
             dispatch(updateVisitWindowValue({ property: "desconforto", value }))
           }
         />
-        <p className={styles.diseaseText}>O cliente tem algum desconforto ou limitação?</p>
+        <p className={styles.diseaseText}>Alguma observação sobre a consulta?</p>
       </div>
       <TextArea
         value={visit.desconfortoText}
@@ -166,7 +162,7 @@ export default function VisitDetails() {
           )
         }
         rows={6}
-        placeholder="Observações sobre o desconforto ou limitação do cliente"
+        placeholder="Importante informar sobre qualquer desconforto ou limitação do cliente"
       />
     </div>
   );
