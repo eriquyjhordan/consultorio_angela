@@ -11,6 +11,9 @@ interface VisitStore {
     outros: string;
     desconforto: boolean;
     desconfortoText: string;
+    tempFileName: string;
+    selectedClient: any;
+    date: [string, string] | string;
 }
 
 const initialState: VisitStore = {
@@ -22,6 +25,9 @@ const initialState: VisitStore = {
     outros: '',
     desconforto: false,
     desconfortoText: '',
+    tempFileName: '',
+    selectedClient: {},
+    date: '',
 };
 const visitSlice = createSlice({
     name: 'Visit',
