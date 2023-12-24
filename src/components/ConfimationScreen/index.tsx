@@ -4,6 +4,7 @@ import styles from './styles.module.sass'
 import { Button, ConfigProvider, Result } from 'antd'
 import { useSelector, useDispatch } from 'react-redux';
 import { updateOperationsWindowValue, resetOperationsWindow } from '../../app/GlobalRedux/Features/operation/operationSlice';
+import { resetVisitWindow, updateVisitWindowValue } from '../../app/GlobalRedux/Features/RegisterVisit/registerSlice';
 import type { RootState } from '../../app/GlobalRedux/store';
 interface SuccessMessageProps {
   operationType: 'Cadastro' | 'Edição' | 'Exclusão'
@@ -12,10 +13,13 @@ interface SuccessMessageProps {
 
 export function SuccessMessage({ operationType, status }: SuccessMessageProps) {
   const operation = useSelector((state: RootState) => state.operation);
+  const visit = useSelector((state: RootState) => state.visit);
   const dispatch = useDispatch();
   function handleBack() {
-    dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
     dispatch(resetOperationsWindow())
+    dispatch(resetVisitWindow())
+    dispatch(updateOperationsWindowValue({ property: 'fetchData', value: !operation.fetchData }))
+    dispatch(updateVisitWindowValue({ property: 'fetchData', value: !visit.fetchData }))
   }
 
   return (

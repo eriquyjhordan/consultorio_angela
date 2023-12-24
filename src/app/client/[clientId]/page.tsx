@@ -84,6 +84,7 @@ export default function Client({ params }) {
 
   const [loading, setLoading] = useState(false)
   const operation = useSelector((state: RootState) => state.operation);
+  const visit = useSelector((state: RootState) => state.visit);
   const dispatch = useDispatch();
 
   function handleEdit(record: any) {
@@ -149,7 +150,7 @@ export default function Client({ params }) {
       setTotalItems(data?.length)
     });
     setLoading(false)
-  }, [params.clientId]);
+  }, [params.clientId, visit.fetchData]);
 
 
   if (!clientData) return <p>Carregando...</p>

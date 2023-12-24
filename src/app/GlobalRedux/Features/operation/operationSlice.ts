@@ -120,6 +120,7 @@ const operationsSlice = createSlice({
             state.fetchData = exchangeControlData.fetchData;
             state.occupation = exchangeControlData.occupation;
             state.indicatedBy = exchangeControlData.indicated_by;
+            state.cpf = exchangeControlData.cpf;
         },
         resetOperationsWindow: (state) => {
             return initialState;

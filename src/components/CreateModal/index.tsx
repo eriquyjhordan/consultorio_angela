@@ -252,7 +252,7 @@ export function Modal({ isModalOpen }: ModalProps) {
               <footer className={styles.footer}>
                 <div className={styles.buttons} >
                   <Button onClick={handleCancel}>Cancelar</Button>
-                  {operation.clientId && (
+                  {/* {operation.clientId && (
                     <ConfigProvider
                       theme={{
                         token: {
@@ -262,7 +262,7 @@ export function Modal({ isModalOpen }: ModalProps) {
                     >
                       <Button type="primary" onClick={() => handleDelete()}>Excluir</Button>
                     </ConfigProvider>
-                  )}
+                  )} */}
                   <Button onClick={() => dispatch(resetOperationsWindow())}>
                     Limpar
                   </Button>

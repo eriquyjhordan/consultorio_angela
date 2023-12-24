@@ -33,25 +33,40 @@ export default function VisitRegister() {
     dispatch(resetVisitWindow());
   };
 
-  const handleSave = async () => {
+  async function moveTmpFileToPublic(fileName: string) {
+    if (!visit.tempFileName) return fileName;
+    fileName = `${visit.selectedClient.value ? visit.selectedClient.value : visit.selectedClient}-${visit.date}.${visit.tempFileName.split('.')[1]}`;
+    fileName = fileName.replace(/\s/g, '');
+    const { data, error } = await supabase
+      .storage
+      .from('fichas')
+      .move(`temp/${visit.tempFileName}`, `fichas/${fileName}`)
+    if (error) {
+      showFeedbackModal(error)
+    }
+    return fileName;
+  }
+
+  function showFeedbackModal(error?: any) {
+    if (error) {
+      setStatus('error')
+      console.log('error: ', error)
+      dispatch(updateVisitWindowValue({ property: "isSuccessScreenOpen", value: true }));
+    } else {
+      setStatus('success')
+      dispatch(updateVisitWindowValue({ property: "isSuccessScreenOpen", value: true }));
+    }
+  }
+
+
+  async function handleEdit() {
+    console.log('handle edit')
     let fileName = '';
-    if (visit.selectedClient && visit.date) {
-      if (visit.tempFileName) {
-        fileName = `${visit.selectedClient.value}-${visit.date}.${visit.tempFileName.split('.')[1]}`;
-        fileName = fileName.replace(/\s/g, '');
-        const { data, error } = await supabase
-          .storage
-          .from('fichas')
-          .move(`temp/${visit.tempFileName}`, `fichas/${fileName}`)
-        if (error) {
-          setStatus('error')
-          console.log('error: ',error)
-          dispatch(updateVisitWindowValue({ property: "isSuccessScreenOpen", value: true }));
-        }
-      }
-      console.log('visit date: ', dayjs((visit.date), 'DD-MM-YYYY HH:mm'))
-      const { data, error }: any = await supabase.from('visit').insert([
-        {
+    if (visit.tempFileName) {
+      fileName = await moveTmpFileToPublic('');
+      const { data, error } = await supabase
+        .from('visit')
+        .update({
           client_id: visit.selectedClient.value,
           visit_date: dayjs((visit.date), 'DD-MM-YYYY HH:mm'),
           lamina_oniciolise: visit.oniciolise,
@@ -59,21 +74,64 @@ export default function VisitRegister() {
           lamina_onicomicose: visit.onicomicose,
           outras_laminas: visit.outros,
           observacoes: visit.desconfortoText,
-          visit_record_url: fileName ?  `https://dhnfwwdtvgnusxvhmbor.supabase.co/storage/v1/object/public/fichas/fichas/${fileName}` : null 
-        }
-      ]).select()
-      if (data) {
-        setStatus('success')
-        dispatch(updateVisitWindowValue({ property: "isSuccessScreenOpen", value: true }));
-      } else if (error) {
-        setStatus('error')
-        console.log('error: ',error)
-        dispatch(updateVisitWindowValue({ property: "isSuccessScreenOpen", value: true }));
+          visit_record_url: fileName ? `https://dhnfwwdtvgnusxvhmbor.supabase.co/storage/v1/object/public/fichas/fichas/${fileName}` : null
+        })
+        .eq('id', visit.visitId)
+      if (error) {
+        showFeedbackModal(error)
+      } else {
+        showFeedbackModal()
+      }
+    } else {
+      const { data: updateWithoutFile, error } = await supabase
+        .from('visit')
+        .update({
+          client_id: visit.selectedClient.value,
+          visit_date: dayjs((visit.date), 'DD-MM-YYYY HH:mm'),
+          lamina_oniciolise: visit.oniciolise,
+          lamina_onicogrifose: visit.onicogrifose,
+          lamina_onicomicose: visit.onicomicose,
+          outras_laminas: visit.outros,
+          observacoes: visit.desconfortoText,
+        })
+        .eq('id', visit.visitId)
+      if (error) {
+        console.log('error: ', error)
+        showFeedbackModal(error)
+      } else {
+        console.log('data: ', updateWithoutFile)
+        showFeedbackModal()
       }
     }
-    // dispatch(
-    //   updateVisitWindowValue({ property: "isVisitModalOpen", value: false })
-    // );
+  }
+
+  const handleSave = async () => {
+    if (visit.visitId) {
+      await handleEdit()
+    } else {
+      let fileName = '';
+      if (visit.selectedClient && visit.date) {
+        fileName = await moveTmpFileToPublic(fileName);
+        const { data, error }: any = await supabase.from('visit').insert([
+          {
+            client_id: visit.selectedClient.value,
+            visit_date: dayjs((visit.date), 'DD-MM-YYYY HH:mm'),
+            lamina_oniciolise: visit.oniciolise,
+            lamina_onicogrifose: visit.onicogrifose,
+            lamina_onicomicose: visit.onicomicose,
+            outras_laminas: visit.outros,
+            observacoes: visit.desconfortoText,
+            visit_record_url: fileName ? `https://dhnfwwdtvgnusxvhmbor.supabase.co/storage/v1/object/public/fichas/fichas/${fileName}` : null
+          }
+        ]).select()
+        if (error) {
+          showFeedbackModal(error)
+        } else {
+          showFeedbackModal()
+        }
+      }
+
+    }
   };
   const handleDelete = () => { };
 
@@ -90,9 +148,7 @@ export default function VisitRegister() {
         }))
       }
     }
-
     fetchData()
-
   }, [visit.isVisitModalOpen, visit.visitId])
 
   return (
