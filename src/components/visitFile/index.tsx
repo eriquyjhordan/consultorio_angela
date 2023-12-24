@@ -25,7 +25,7 @@ export default function VisitFile() {
     const { data: uploadStatus, error: uploadError } = await supabase
       .storage
       .from('fichas')
-      .upload(`temp/${tempFileName}.png`, fileToUpload, {
+      .upload(`temp/${tempFileName}.${fileExtension}`, fileToUpload, {
         cacheControl: '3600',
         upsert: false
       })
