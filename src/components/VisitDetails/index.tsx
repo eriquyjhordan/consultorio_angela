@@ -36,7 +36,7 @@ export default function VisitDetails() {
   const onOk = (
     value: DatePickerProps["value"] | RangePickerProps["value"]
   ) => {
-    // console.log("onOk: ", value)
+    dispatch(updateVisitWindowValue({ property: "date", value }));
   };
 
   useEffect(() => {
@@ -74,6 +74,8 @@ export default function VisitDetails() {
         format="DD-MM-YYYY HH:mm"
         onChange={onChange}
         onOk={onOk}
+        value={visit.date}
+        showNow={false}
         placeholder="Selecione a data e hora da consulta"
       />
       <h4 className={styles.subtitle}>Lâminas</h4>
