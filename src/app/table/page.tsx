@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from '../styles/table.module.sass'
 import { LeftOutlined } from '@ant-design/icons'
 import { Modal } from '../../components/CreateModal'
-import VisitRegister  from '../../components/VisitRegister'
+import VisitRegister from '../../components/VisitRegister'
 import { Button, Table } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link';
@@ -37,6 +37,7 @@ function TableScreen() {
     const { data } = await supabase.from('Clients')
       .select('*')
       .range(startRange, endRange)
+    const { data: visits } = await supabase.from('visit').select('*').order('visit_date', { ascending: false })
     if (data) {
       const dataFiltered = data.map((item: any) => (
         {
@@ -45,6 +46,7 @@ function TableScreen() {
           primary_phone: item.primary_phone,
           name: item.name,
           birthdate: dayjs(item.birthdate).format('DD/MM/YYYY'),
+          visit_date: visits && visits.find((visit: any) => visit.client_id === item.id) ? dayjs(visits.find((visit: any) => visit.client_id === item.id).visit_date).format('DD/MM/YYYY') : 'Não cadastrada'
         }
       )) as any
       setLoading(false)
@@ -64,8 +66,12 @@ function TableScreen() {
   const columns: any = [
     {
       title: 'Nome',
-      dataIndex: 'name',
       key: 'name',
+      render: (text: any, record: any) => (
+        <Link href={`/client/${record.id}`}>
+          {record.name}
+        </Link>
+      ),
     },
     {
       title: 'Telefone Principal',
@@ -113,7 +119,9 @@ function TableScreen() {
       const anoAtual = now.getFullYear()
       const mesAtual = dayjs(now).format('MM')
       const { data: qtdClientes } = await supabase.from('Clients').select('count')
+      const { data: qtdVisits, error: visit_error } = await (await supabase.from('visit').select('*').gte('visit_date', `${anoAtual}-${mesAtual}-01}`))
       dispatch(updateOperationsWindowValue({ property: 'clientsQuantity', value: qtdClientes[0].count }))
+      dispatch(updateOperationsWindowValue({ property: 'visitorsQuantity', value: qtdVisits.length }))
       const { data: visitorsQuantity } = await supabase
         .from('visit')
         .select('*')
