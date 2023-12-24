@@ -49,16 +49,17 @@ export default function VisitRegister() {
           dispatch(updateVisitWindowValue({ property: "isSuccessScreenOpen", value: true }));
         }
       }
+      console.log('visit date: ', dayjs((visit.date), 'DD-MM-YYYY HH:mm'))
       const { data, error }: any = await supabase.from('visit').insert([
         {
           client_id: visit.selectedClient.value,
-          visit_date: dayjs((visit.date).toString(), 'DD-MM-YYYY HH:mm'),
+          visit_date: dayjs((visit.date), 'DD-MM-YYYY HH:mm'),
           lamina_oniciolise: visit.oniciolise,
           lamina_onicogrifose: visit.onicogrifose,
           lamina_onicomicose: visit.onicomicose,
           outras_laminas: visit.outros,
           observacoes: visit.desconfortoText,
-          visit_record_url:  `https://dhnfwwdtvgnusxvhmbor.supabase.co/storage/v1/object/public/fichas/fichas/${fileName}` 
+          visit_record_url: fileName ?  `https://dhnfwwdtvgnusxvhmbor.supabase.co/storage/v1/object/public/fichas/fichas/${fileName}` : null 
         }
       ]).select()
       if (data) {
