@@ -54,7 +54,7 @@ const visitSlice = createSlice({
             state.desconforto = exchangeControlData.observacoes ? true : false;
             state.selectedClient = exchangeControlData.client_id;
             state.date = exchangeControlData.date;
-            state.imageUrl = exchangeControlData.visit_record_url;
+            state.imageUrl = exchangeControlData.visit_record_url ? exchangeControlData.visit_record_url : initialState.imageUrl;
         },
         resetVisitWindow: (state) => {
             return initialState;
