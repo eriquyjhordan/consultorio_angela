@@ -1,10 +1,10 @@
 'use client'
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from '../styles/table.module.sass'
-import { LeftOutlined } from '@ant-design/icons'
+import { LeftOutlined, SearchOutlined } from '@ant-design/icons'
 import { Modal } from '../../components/CreateModal'
 import VisitRegister from '../../components/VisitRegister'
-import { Button, Table } from 'antd'
+import { Button, Input, Table } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link';
 // import { GetServerSideProps } from 'next';
@@ -16,6 +16,7 @@ import type { RootState } from '../GlobalRedux/store';
 
 function TableScreen() {
   const operation = useSelector((state: RootState) => state.operation);
+  const searchInput = useRef(null);
   const visit = useSelector((state: RootState) => state.visit);
   const dispatch = useDispatch();
   const supabase = createClientComponentClient()
@@ -30,14 +31,28 @@ function TableScreen() {
     dispatch(updateOperationsWindowValue({ property: 'isModalOpen', value: true }))
   }
 
-  const handlePageChange = async (page: any) => {
+  const handlePageChange = async (page: any, term: any = '') => {
     setLoading(true)
     const startRange = (page - 1) * itemsPerPage
     const endRange = startRange + itemsPerPage - 1
-    const { data } = await supabase.from('Clients')
+
+    let query = supabase
+      .from('Clients')
       .select('*')
       .range(startRange, endRange)
-      .order('name', { ascending: true })
+      .order('name', { ascending: true });
+
+    if (term !== '' && term !== undefined && term !== null && term !== 9) {
+      query = query.ilike('name', `%${term}%`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching data: ", error);
+      return;
+    }
+
     const { data: visits } = await supabase.from('visit').select('*').order('visit_date', { ascending: false })
     if (data) {
       const dataFiltered = data.map((item: any) => (
@@ -64,10 +79,49 @@ function TableScreen() {
     loading,
   }
 
+  const handleSearch = (selectedKeys, confirm) => {
+    confirm();
+    handlePageChange(currentPage, selectedKeys[0]);
+  };
+
+  const handleReset = clearFilters => {
+    clearFilters();
+    handlePageChange(currentPage, '');
+  };
+
   const columns: any = [
     {
       title: 'Nome',
       key: 'name',
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={searchInput}
+            placeholder={`Pesquisar por nome`}
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm)}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm)}
+            size="small"
+            style={{ width: 90, marginRight: 8 }}
+          >
+            Pesquisar
+          </Button>
+          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+            Limpar
+          </Button>
+        </div>
+      ),
+      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilterDropdownVisibleChange: visible => {
+        if (visible) {
+          setTimeout(() => searchInput.current.select());
+        }
+      },
       render: (text: any, record: any) => (
         <Link href={`/client/${record.id}`}>
           {record.name}
