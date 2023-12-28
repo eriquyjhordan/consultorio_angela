@@ -37,6 +37,7 @@ function TableScreen() {
     const { data } = await supabase.from('Clients')
       .select('*')
       .range(startRange, endRange)
+      .order('name', { ascending: true })
     const { data: visits } = await supabase.from('visit').select('*').order('visit_date', { ascending: false })
     if (data) {
       const dataFiltered = data.map((item: any) => (
@@ -45,7 +46,7 @@ function TableScreen() {
           key: item.id,
           primary_phone: item.primary_phone,
           name: item.name,
-          birthdate: dayjs(item.birthdate).format('DD/MM/YYYY'),
+          birthdate: item.birthdate ? dayjs(item.birthdate).format('DD/MM/YYYY') : 'Não cadastrada',
           visit_date: visits && visits.find((visit: any) => visit.client_id === item.id) ? dayjs(visits.find((visit: any) => visit.client_id === item.id).visit_date).format('DD/MM/YYYY') : 'Não cadastrada'
         }
       )) as any
